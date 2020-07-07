@@ -17,4 +17,4 @@ Edit current Python scripts to change target.
 
 - Python
 - Packages:
-  - pandas 
+  - pandas
