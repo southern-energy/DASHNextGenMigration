@@ -53,7 +53,7 @@ def download_excel():
     browser.find_element_by_id("ContentPlaceHolder1_lnkExport").click()
 
 def read_table():
-    browser.get("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=4")
+    browser.get("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=6")
 
     #  Start of Grabbing Iterator Information
 
@@ -81,8 +81,10 @@ def read_table():
     table_list = browser.find_elements_by_class_name('rgClipCells')
 
     # We have to grab table headings from the report.
-    table_headers = table_list[0]
-    print(table_headers)
+    table_headers_table = table_list[0]
+    print(table_headers_table)
+
+    table_headers_table_table_row_element = browser.find_element_by_xpath("/html/body/form/div[4]/div[3]/div[6]/div[6]/div[1]/div/table/thead/tr[1]").get_attribute('outerHTML')
 
 
     table_we_want = table_list[1].get_attribute('outerHTML')
@@ -92,14 +94,21 @@ def read_table():
     # print(dataframe)
     # print(len(dataframe.index))
 
-    while int(len(dataframe.index)) <= items:
+    while int(len(dataframe.index)) < items:
         browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgReport$ctl00$ctl03$ctl01$ctl11").click()
+        time.sleep(10)
+        table_list = browser.find_elements_by_class_name('rgClipCells')
+        table_we_want = table_list[1].get_attribute('outerHTML')
+        # print(table_we_want)
         dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
         print(len(dataframe.index))
+        time.sleep(2)
     else:
         print("We are done scraping.")
         print(dataframe)
         print(len(dataframe.index))
+
+    dataframe.to_csv("Export.csv")
     return dataframe
 
 def database_plug(dataframe):
@@ -127,5 +136,6 @@ def database_plug(dataframe):
     cursor.close()
 
 login_into_dash("./DASHLoginInfo.json")
-# read_table()
+read_table()
 # database_plug()
+# export()
