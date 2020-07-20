@@ -110,7 +110,7 @@ def read_table():
         print(dataframe)
         print(len(dataframe.index))
 
-    dataframe.to_csv("Export.csv")
+    dataframe.to_csv("Export.csv", index=False)
     return dataframe
 
 def database_plug(dataframe):
