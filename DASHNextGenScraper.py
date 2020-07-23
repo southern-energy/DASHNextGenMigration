@@ -2,6 +2,7 @@ import selenium
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.webdriver import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import requests
 import json
 import re
@@ -20,9 +21,10 @@ import MySQLdb
 import os
 # End of Import Section
 
+# Importing Webdriver_Manager to prevent the need for maintenance.
+# https://github.com/SergeyPirogov/webdriver_manager
 
-
-browser = webdriver.Chrome("./chromedriver.exe")
+browser = webdriver.Chrome(ChromeDriverManager().install())
 
 # print("Headless Browser Running")
 # options = Options()
@@ -80,7 +82,7 @@ def read_table():
 
     table_list = browser.find_elements_by_class_name('rgClipCells')
 
-    # TODO: I want to scrape table headings dynamically from reports.
+ 
     
     # We have to grab table headings from the report.
     table_headers_table = table_list[0]
