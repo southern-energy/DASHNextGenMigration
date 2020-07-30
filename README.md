@@ -24,3 +24,5 @@ Change where python scripts are pointing and scrape information.
 - Chromedriver.exe
 - Python Packages:
   - pandas
+  - selenium
+  - webdriver_manager
