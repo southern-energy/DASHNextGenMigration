@@ -114,9 +114,9 @@ def read_table():
 
     """Please remember to change the columns for each report"""
 
-    dataframe = pd.DataFrame(columns=["Job ID","Project Name","Client Name",	"Street Address","Lot","City","State","Zip","Subdivision Name","Gas Utility","Electric Utility","Division Name","Job Number","HERS","Bldg File","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link","Date Entered"])
+    dataframe = pd.DataFrame(columns=["Job ID","Project Name","Client Name","Street Address","Lot","City","State","Zip","Subdivision Name","Gas Utility","Electric Utility","Division Name","Job Number","HERS","Bldg File","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link","Date Entered"])
 
-    
+
     dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
     print(len(dataframe.index))
     # print(dataframe)
