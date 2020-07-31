@@ -150,13 +150,11 @@ def read_table(url):
 
     # dataframe.to_csv("Export_Before_Builder_Project.csv", encoding="utf-8", index=False)
 
-    dataframe = dataframe[dataframe.columns.drop(1)]
+    # dataframe = dataframe[dataframe.columns.drop(1)]
 
     # dataframe.to_csv("Export_After_Builder_Project_col_Drop.csv", encoding="utf-8", index=False)
 
-    # dataframe = dataframe[["Job ID","Job Number","Street Address","City","State","Zip","Client Name","Subdivision Name","Gas Utility","Electric Utility","Lot","Division Name","HERS","Bldg File","Date Entered","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link"]]
-
-    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,13,14,18,16,17]]
+    dataframe = dataframe[[1,0,2,3,4,11,10,5,6,7,8,9,16,17,18,19,12,13,14,15]]
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
@@ -167,13 +165,13 @@ def read_table(url):
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 
-    # Remove the previous "Export_After_Regex_Replacements.csv" file.
-    if os.path.exists("Export_After_Regex_Replacements.csv"):
-        os.remove("Export_After_Regex_Replacements.csv")
+    # Remove the previous "DASH_Service_Export_After_Regex_Replacements.csv" file.
+    if os.path.exists("DASH_Service_Export_After_Regex_Replacements.csv"):
+        os.remove("DASH_Service_Export_After_Regex_Replacements.csv")
     else:
         print("We do not have to remove the file.")
 
-    dataframe.to_csv("Export_After_Regex_Replacements.csv", index=False)
+    dataframe.to_csv("DASH_Service_Export_After_Regex_Replacements.csv", index=False)
 
 def csv_to_database():
 
@@ -190,11 +188,11 @@ def csv_to_database():
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\Export_After_Regex_Replacements.csv"
+    path= os.getcwd()+"\\DASH_Service_Export_After_Regex_Replacements.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
     
-    cursor.execute('LOAD DATA LOCAL INFILE \"'+ path +'\" REPLACE INTO TABLE `job` FIELDS TERMINATED BY \',\' ignore 1 lines;')
+    cursor.execute('LOAD DATA LOCAL INFILE \"'+ path +'\" REPLACE INTO TABLE `service` FIELDS TERMINATED BY \',\' ignore 1 lines;')
     
     # #close the connection to the database.
     mydb.commit()
@@ -205,7 +203,7 @@ def main():
     Please use these to control the previously defined functions.
     """
     login_into_dash("./DASHLoginInfo.json")
-    read_table("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=6")
+    read_table("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=18")
     csv_to_database()
 
 main()
