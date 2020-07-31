@@ -112,6 +112,9 @@ def read_table(url):
 
     table_we_want = table_list[1].get_attribute('outerHTML')
 
+    table_we_want = re.sub('<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
+    table_we_want = re.sub('<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+
     """Please remember to change the columns for each report"""
 
     # dataframe = pd.DataFrame(columns=["Job ID","Project Name","Client Name","Street Address","Lot","City","State","Zip","Subdivision Name","Gas Utility","Electric Utility","Division Name","Job Number","HERS","Bldg File","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link","Date Entered"])

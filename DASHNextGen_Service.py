@@ -112,6 +112,9 @@ def read_table(url):
 
     table_we_want = table_list[1].get_attribute('outerHTML')
     
+    table_we_want = re.sub('<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
+    table_we_want = re.sub('<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+
     # print(table_we_want)
 
     """Please remember to change the columns for each report"""
