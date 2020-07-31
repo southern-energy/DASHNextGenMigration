@@ -154,7 +154,7 @@ def read_table(url):
 
     # dataframe = dataframe[["Job ID","Job Number","Street Address","City","State","Zip","Client Name","Subdivision Name","Gas Utility","Electric Utility","Lot","Division Name","HERS","Bldg File","Date Entered","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link"]]
 
-    dataframe = dataframe[[0,2,6,4,1,5]]
+    dataframe = dataframe[[0,2,3,4,1,5]]
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
@@ -192,7 +192,7 @@ def csv_to_database():
     print (path+"\\")
     path = path.replace('\\', '/')
     
-    cursor.execute('LOAD DATA LOCAL INFILE \"'+ path +'\" REPLACE INTO TABLE `job` FIELDS TERMINATED BY \',\' ignore 1 lines;')
+    cursor.execute('LOAD DATA LOCAL INFILE \"'+ path +'\" REPLACE INTO TABLE `builder` FIELDS TERMINATED BY \',\' ignore 1 lines;')
     
     # #close the connection to the database.
     mydb.commit()
