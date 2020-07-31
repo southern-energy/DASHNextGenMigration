@@ -70,11 +70,11 @@ def login_into_dash(json_target_file):
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$btnLogin").click()
 
 def download_excel():
-    browser.get("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=1")
+    browser.get("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=6")
     browser.find_element_by_id("ContentPlaceHolder1_lnkExport").click()
 
-def read_table():
-    browser.get("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=8")
+def read_table(url):
+    browser.get(url)
 
     #  Start of Grabbing Iterator Information
 
@@ -114,8 +114,9 @@ def read_table():
 
     """Please remember to change the columns for each report"""
 
-    dataframe = pd.DataFrame(columns=["Job ID","Project Name","Client Name","Street Address","Lot","City","State","Zip","Subdivision Name","Gas Utility","Electric Utility","Division Name","Job Number","HERS","Bldg File","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link","Date Entered"])
+    # dataframe = pd.DataFrame(columns=["Job ID","Project Name","Client Name","Street Address","Lot","City","State","Zip","Subdivision Name","Gas Utility","Electric Utility","Division Name","Job Number","HERS","Bldg File","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link","Date Entered"])
 
+    dataframe = pd.DataFrame()
 
     dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
     print(len(dataframe.index))
@@ -136,12 +137,41 @@ def read_table():
         print(dataframe)
         print(len(dataframe.index))
 
-    dataframe.to_csv("Export.csv", encoding="utf-8", index=False)
+
+    """
+    Here we must reorder the columns so our data can be compatible with older DASH Information
+    
+    The changes we are making:
+        - Remove Project Name Column
+        - Rearranging the columns to align with the database schema.
+    """
+
+    # dataframe = dataframe[dataframe.columns.drop("Project Name")]
+
+    # dataframe.to_csv("Export_Before_Builder_Project.csv", encoding="utf-8", index=False)
+
+    dataframe = dataframe[dataframe.columns.drop(1)]
+
+    # dataframe.to_csv("Export_After_Builder_Project_col_Drop.csv", encoding="utf-8", index=False)
+
+    # dataframe = dataframe[["Job ID","Job Number","Street Address","City","State","Zip","Client Name","Subdivision Name","Gas Utility","Electric Utility","Lot","Division Name","HERS","Bldg File","Date Entered","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link"]]
+
+    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,13,14,18,16,17]]
+
+    # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
+
+    # dataframe.to_csv("Export.csv", encoding="utf-8", index=False)
     
     dataframe = dataframe.replace({',': '.'}, regex=True) # remove all commas
     dataframe = dataframe.replace({';': '.'}, regex=True) # remove all commas
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
+
+    # Remove the previous "Export_After_Regex_Replacements.csv" file.
+    if os.path.exists("Export_After_Regex_Replacements.csv"):
+        os.remove("Export_After_Regex_Replacements.csv")
+    else:
+        print("We do not have to remove the file.")
 
     dataframe.to_csv("Export_After_Regex_Replacements.csv", index=False)
 
@@ -160,7 +190,7 @@ def csv_to_database():
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\Export.csv"
+    path= os.getcwd()+"\\Export_After_Regex_Replacements.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
     
@@ -174,8 +204,8 @@ def main():
     """
     Please use these to control the previously defined functions.
     """
-    # login_into_dash("./DASHLoginInfo.json")
-    # read_table()
+    login_into_dash("./DASHLoginInfo.json")
+    read_table("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=6")
     csv_to_database()
 
 main()
