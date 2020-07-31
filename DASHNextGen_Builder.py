@@ -150,8 +150,6 @@ def read_table(url):
 
     # dataframe.to_csv("Export_Before_Builder_Project.csv", encoding="utf-8", index=False)
 
-    dataframe = dataframe[dataframe.columns.drop(1)]
-
     # dataframe.to_csv("Export_After_Builder_Project_col_Drop.csv", encoding="utf-8", index=False)
 
     # dataframe = dataframe[["Job ID","Job Number","Street Address","City","State","Zip","Client Name","Subdivision Name","Gas Utility","Electric Utility","Lot","Division Name","HERS","Bldg File","Date Entered","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link"]]
