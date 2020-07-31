@@ -124,7 +124,7 @@ def read_table(url):
     # print(len(dataframe.index))
 
     while int(len(dataframe.index)) < items:
-        browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgReport$ctl00$ctl03$ctl01$ctl11").click()
+        browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
         time.sleep(10)
         table_list = browser.find_elements_by_class_name('rgClipCells')
         table_we_want = table_list[1].get_attribute('outerHTML')
