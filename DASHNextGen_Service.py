@@ -178,6 +178,10 @@ def read_table(url):
     else:
         print("We do not have to remove the file.")
 
+    #TODO: We have to name the columns for this dataframe as well.
+
+    # dataframe.rename(columns=)
+
     dataframe.to_csv("DASH_Service_Export_After_Regex_Replacements.csv", index=False)
 
 def csv_to_database():
