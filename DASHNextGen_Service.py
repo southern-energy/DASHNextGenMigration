@@ -115,7 +115,7 @@ def read_table(url):
     table_we_want = re.sub('<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
     table_we_want = re.sub('<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
 
-    # print(table_we_want)
+    print(table_we_want)
 
     """Please remember to change the columns for each report"""
 
@@ -130,15 +130,18 @@ def read_table(url):
 
     while int(len(dataframe.index)) < items:
         browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
-        # browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgReport$ctl00$ctl03$ctl01$ctl11").click()
-        # browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgReport$ctl00$ctl03$ctl01$ctl14").click()
-        time.sleep(10)
         table_list = browser.find_elements_by_class_name('rgClipCells')
         table_we_want = table_list[1].get_attribute('outerHTML')
+
+        # We need to apply the regext statements from earlier to each loop as well.
+
+        table_we_want = re.sub('<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
+        table_we_want = re.sub('<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+
         # print(table_we_want)
         dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
         print(len(dataframe.index))
-        time.sleep(2)
+        time.sleep(5)
     else:
         print("We are done scraping.")
         print(dataframe)
@@ -149,7 +152,6 @@ def read_table(url):
     Here we must reorder the columns so our data can be compatible with older DASH Information
     
     The changes we are making:
-        - Remove Project Name Column
         - Rearranging the columns to align with the database schema.
     """
 
@@ -167,10 +169,10 @@ def read_table(url):
 
     # dataframe.to_csv("Export.csv", encoding="utf-8", index=False)
     
-    dataframe = dataframe.replace({',': '.'}, regex=True) # remove all commas
-    dataframe = dataframe.replace({';': '.'}, regex=True) # remove all commas
-    dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
-    dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
+    # dataframe = dataframe.replace({',': '.'}, regex=True) # remove all commas
+    # dataframe = dataframe.replace({';': '.'}, regex=True) # remove all semicolons
+    # dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
+    # dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 
     # Remove the previous "DASH_Service_Export_After_Regex_Replacements.csv" file.
     if os.path.exists("DASH_Service_Export_After_Regex_Replacements.csv"):
@@ -180,7 +182,12 @@ def read_table(url):
 
     #TODO: We have to name the columns for this dataframe as well.
 
-    # dataframe.rename(columns=)
+    # dataframe.rename(columns={1:"RatingID",0:"",2:"",3:"",4:"",11:"",10:"",5:"",6:"",7:"",8:"",9:"",16:"",17:"",18:"",19:"",12:"",13:"",14:"",15:""})
+
+    '''
+    List we mst match.
+    ["RatingID","Address","City","State","Zip","Builder","Subdivision","Lot","ServiceID","ServiceType","ServiceDate","Employee","LastUpdated"]
+    '''
 
     dataframe.to_csv("DASH_Service_Export_After_Regex_Replacements.csv", index=False)
 
@@ -215,6 +222,6 @@ def main():
     """
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=18")
-    csv_to_database()
+    # csv_to_database()
 
 main()
