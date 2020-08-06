@@ -112,8 +112,8 @@ def read_table(url):
 
     table_we_want = table_list[1].get_attribute('outerHTML')
     
-    table_we_want = re.sub('<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
-    table_we_want = re.sub('<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+    table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
+    table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
 
     print(table_we_want)
 
@@ -135,8 +135,8 @@ def read_table(url):
 
         # We need to apply the regext statements from earlier to each loop as well.
 
-        table_we_want = re.sub('<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
-        table_we_want = re.sub('<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+        table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
+        table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
 
         # print(table_we_want)
         dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)

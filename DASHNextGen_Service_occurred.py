@@ -112,8 +112,8 @@ def read_table(url):
 
     table_we_want = table_list[1].get_attribute('outerHTML')
 
-    table_we_want = re.sub('<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
-    table_we_want = re.sub('<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+    table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
+    table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
 
     """Please remember to change the columns for each report"""
 
@@ -168,13 +168,13 @@ def read_table(url):
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 
-    # Remove the previous "DASH_Service_Occurred_Export_After_Regex_Replacements.csv" file.
-    if os.path.exists("DASH_Service_Occurred_Export_After_Regex_Replacements.csv"):
-        os.remove("DASH_Service_Occurred_Export_After_Regex_Replacements.csv")
+    # Remove the previous "DASH_Service_Occurred_Export.csv" file.
+    if os.path.exists("DASH_Service_Occurred_Export.csv"):
+        os.remove("DASH_Service_Occurred_Export.csv")
     else:
         print("We do not have to remove the file.")
 
-    dataframe.to_csv("DASH_Service_Occurred_Export_After_Regex_Replacements.csv", index=False)
+    dataframe.to_csv("DASH_Service_Occurred_Export.csv", index=False)
 
 def csv_to_database():
 
@@ -191,7 +191,7 @@ def csv_to_database():
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\DASH_Service_Occurred_Export_After_Regex_Replacements.csv"
+    path= os.getcwd()+"\\DASH_Service_Occurred_Export.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
     
