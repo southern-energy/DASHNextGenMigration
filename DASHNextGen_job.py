@@ -69,10 +69,6 @@ def login_into_dash(json_target_file):
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$Password").send_keys(password)
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$btnLogin").click()
 
-def download_excel():
-    browser.get("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=6")
-    browser.find_element_by_id("ContentPlaceHolder1_lnkExport").click()
-
 def read_table(url):
     browser.get(url)
 
@@ -158,12 +154,14 @@ def read_table(url):
 
     dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,13,14,18,16,17]]
 
+    # dataframe = dataframe.rename(columns={1:"ServiceID",0:"RatingID",2:"ServiceName",3:"ServiceDate",4:"Employee",11:"PONumber",10:"Price",5:"TestingComplete",6:"DataEntryComplete",7:"Reschedule",8:"Reinspection",9:"RescheduledDate",16:"DateEntered",17:"EnteredBy",18:"LastUpdated",19:"LastUpdatedBy",12:"Checkbox3Value",13:"EmployeeTime5",14:"EmployeeTime6",15:"EmployeeTime7"})
+
+    dataframe[18] = pd.to_datetime(dataframe[18], utc=False)
+
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
-    # dataframe.to_csv("Export.csv", encoding="utf-8", index=False)
-    
-    dataframe = dataframe.replace({',': '.'}, regex=True) # remove all commas
-    dataframe = dataframe.replace({';': '.'}, regex=True) # remove all commas
+    dataframe = dataframe.replace({r',': '.'}, regex=True) # remove all commas
+    dataframe = dataframe.replace({r';': '.'}, regex=True) # remove all commas
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 

@@ -112,8 +112,8 @@ def read_table(url):
 
     table_we_want = table_list[1].get_attribute('outerHTML')
 
-    table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
-    table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+    table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+    table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
 
     """Please remember to change the columns for each report"""
 
@@ -132,6 +132,8 @@ def read_table(url):
         table_list = browser.find_elements_by_class_name('rgClipCells')
         table_we_want = table_list[1].get_attribute('outerHTML')
         # print(table_we_want)
+        table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+        table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
         dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
         print(len(dataframe.index))
         time.sleep(2)
@@ -158,6 +160,9 @@ def read_table(url):
     # dataframe = dataframe[["Job ID","Job Number","Street Address","City","State","Zip","Client Name","Subdivision Name","Gas Utility","Electric Utility","Lot","Division Name","HERS","Bldg File","Date Entered","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link"]]
 
     dataframe = dataframe[[0,2,3,4,1,5]]
+    dataframe = dataframe.rename(columns={0:"ServiceID",2:"BuilderName",3:"AbbName",4:"Website",1:"Active",5:"DateEntered"})
+
+    dataframe['DateEntered'].astype('datetime64[ns]')
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 

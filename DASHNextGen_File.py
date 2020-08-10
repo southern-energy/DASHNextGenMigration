@@ -112,8 +112,8 @@ def read_table(url):
 
     table_we_want = table_list[1].get_attribute('outerHTML')
 
-    table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
-    table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+    table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+    table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
 
     """Please remember to change the columns for each report"""
 
@@ -133,6 +133,8 @@ def read_table(url):
         table_list = browser.find_elements_by_class_name('rgClipCells')
         table_we_want = table_list[1].get_attribute('outerHTML')
         # print(table_we_want)
+        table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+        table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
         dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
         print(len(dataframe.index))
         time.sleep(2)

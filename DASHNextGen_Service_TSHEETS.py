@@ -112,14 +112,10 @@ def read_table(url):
 
     table_we_want = table_list[1].get_attribute('outerHTML')
     
-    table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
-    table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+    table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+    table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
 
     print(table_we_want)
-
-    """Please remember to change the columns for each report"""
-
-    # dataframe = pd.DataFrame(columns=["Job ID","Project Name","Client Name","Street Address","Lot","City","State","Zip","Subdivision Name","Gas Utility","Electric Utility","Division Name","Job Number","HERS","Bldg File","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link","Date Entered"])
 
     dataframe = pd.DataFrame()
 
@@ -150,6 +146,7 @@ def read_table(url):
         print(dataframe)
         print(len(dataframe.index))
     """
+
     page_counter = 0
     page_limiter = 7
 
@@ -160,8 +157,8 @@ def read_table(url):
 
         # We need to apply the regext statements from earlier to each loop as well.
 
-        table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
-        table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+        table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+        table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
 
         # print(table_we_want)
         dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
@@ -205,7 +202,6 @@ def read_table(url):
     else:
         print("We do not have to remove the file.")
 
-    #TODO: We have to name the columns for this dataframe as well.
      
     dataframe = dataframe.rename(columns={0:"RatingID",2:"Address",4:"City",5:"State",6:"Zip",1:"Builder",7:"Subdivision",3:"Lot",8:"ServiceID",9:"ServiceType",10:"ServiceDate",11:"Employee",13:"LastUpdated"})
 

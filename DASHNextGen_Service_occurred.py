@@ -69,10 +69,6 @@ def login_into_dash(json_target_file):
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$Password").send_keys(password)
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$btnLogin").click()
 
-def download_excel():
-    browser.get("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=6")
-    browser.find_element_by_id("ContentPlaceHolder1_lnkExport").click()
-
 def read_table(url):
     browser.get(url)
 
@@ -112,8 +108,8 @@ def read_table(url):
 
     table_we_want = table_list[1].get_attribute('outerHTML')
 
-    table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
-    table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+    table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+    table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
 
     """Please remember to change the columns for each report"""
 
@@ -132,6 +128,8 @@ def read_table(url):
         table_list = browser.find_elements_by_class_name('rgClipCells')
         table_we_want = table_list[1].get_attribute('outerHTML')
         # print(table_we_want)
+        table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+        table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
         dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
         print(len(dataframe.index))
         time.sleep(2)
@@ -153,6 +151,11 @@ def read_table(url):
     dataframe = dataframe.rename(columns={1:"ServiceID",0:"RatingID",2:"ServiceName",3:"ServiceDate",4:"Employee",11:"PONumber",10:"Price",5:"TestingComplete",6:"DataEntryComplete",7:"Reschedule",8:"Reinspection",9:"RescheduledDate",16:"DateEntered",17:"EnteredBy",18:"LastUpdated",19:"LastUpdatedBy",12:"Checkbox3Value",13:"EmployeeTime5",14:"EmployeeTime6",15:"EmployeeTime7"})
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
+
+    dataframe['LastUpdated'].astype('datetime64[ns]')
+    dataframe['DateEntered'].astype('datetime64[ns]')
+    pd.to_datetime(dataframe['ServiceDate'], utc=False)
+    pd.to_datetime(dataframe['RescheduledDate'], utc=False)
 
     dataframe = dataframe.replace({r',': '.'}, regex=True) # remove all commas
     dataframe = dataframe.replace({r';': '.'}, regex=True) # remove all commas

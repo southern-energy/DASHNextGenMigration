@@ -131,8 +131,8 @@ def read_table(url):
 
         # We need to apply the regext statements from earlier to each loop as well.
 
-        table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
-        table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+        table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+        table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
 
         # print(table_we_want)
         dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
@@ -166,12 +166,10 @@ def read_table(url):
 
     """Please remember to change the columns for each report"""
 
-    """
     dataframe['LastUpdated'].astype('datetime64[ns]')
     dataframe['DateEntered'].astype('datetime64[ns]')
     pd.to_datetime(dataframe['ServiceDate'], utc=False)
-    pd.to_datetime(dataframe['RescheduleDate'], utc=False)
-    """
+    pd.to_datetime(dataframe['RescheduledDate'], utc=False)
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
