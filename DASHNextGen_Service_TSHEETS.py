@@ -127,6 +127,9 @@ def read_table(url):
     print(len(dataframe.index))
     # print(dataframe)
     # print(len(dataframe.index))
+    
+    """
+    # This is the version that reads the number of items in the page and counts the items until all items have been read from the tables.
 
     while int(len(dataframe.index)) < items:
         browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
@@ -146,7 +149,29 @@ def read_table(url):
         print("We are done scraping.")
         print(dataframe)
         print(len(dataframe.index))
+    """
+    page_counter = 0
+    page_limiter = 7
 
+    while page_counter < page_limiter:
+        browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
+        table_list = browser.find_elements_by_class_name('rgClipCells')
+        table_we_want = table_list[1].get_attribute('outerHTML')
+
+        # We need to apply the regext statements from earlier to each loop as well.
+
+        table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
+        table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+
+        # print(table_we_want)
+        dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
+        print(len(dataframe.index))
+        time.sleep(5)
+        page_counter += 1
+    else:
+        print("We are done scraping.")
+        print(dataframe)
+        print(len(dataframe.index))
 
     """
     Here we must reorder the columns so our data can be compatible with older DASH Information
