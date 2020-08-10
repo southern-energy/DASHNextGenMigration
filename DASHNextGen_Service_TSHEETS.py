@@ -185,9 +185,10 @@ def read_table(url):
     dataframe = dataframe.rename(columns={0:"RatingID",2:"Address",4:"City",5:"State",6:"Zip",1:"Builder",7:"Subdivision",3:"Lot",8:"ServiceID",9:"ServiceType",10:"ServiceDate",11:"Employee",13:"LastUpdated"})
 
     dataframe['LastUpdated'].astype('datetime64[ns]')
+    pd.to_datetime(dataframe['ServiceDate'], utc=False)
 
     '''
-    List we mst match.
+    List we must match.
     ["RatingID","Address","City","State","Zip","Builder","Subdivision","Lot","ServiceID","ServiceType","ServiceDate","Employee","LastUpdated"]
     '''
 

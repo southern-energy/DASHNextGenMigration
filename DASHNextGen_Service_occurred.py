@@ -145,26 +145,17 @@ def read_table(url):
     Here we must reorder the columns so our data can be compatible with older DASH Information
     
     The changes we are making:
-        - Remove Project Name Column
         - Rearranging the columns to align with the database schema.
     """
 
-    # dataframe = dataframe[dataframe.columns.drop("Project Name")]
-
-    # dataframe.to_csv("Export_Before_Builder_Project.csv", encoding="utf-8", index=False)
-
-    # dataframe = dataframe[dataframe.columns.drop(1)]
-
-    # dataframe.to_csv("Export_After_Builder_Project_col_Drop.csv", encoding="utf-8", index=False)
-
     dataframe = dataframe[[1,0,2,3,4,11,10,5,6,7,8,9,16,17,18,19,12,13,14,15]]
+
+    dataframe = dataframe.rename(columns={1:"ServiceID",0:"RatingID",2:"ServiceName",3:"ServiceDate",4:"Employee",11:"PONumber",10:"Price",5:"TestingComplete",6:"DataEntryComplete",7:"Reschedule",8:"Reinspection",9:"RescheduledDate",16:"DateEntered",17:"EnteredBy",18:"LastUpdated",19:"LastUpdatedBy",12:"Checkbox3Value",13:"EmployeeTime5",14:"EmployeeTime6",15:"EmployeeTime7"})
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
-    # dataframe.to_csv("Export.csv", encoding="utf-8", index=False)
-    
-    dataframe = dataframe.replace({',': '.'}, regex=True) # remove all commas
-    dataframe = dataframe.replace({';': '.'}, regex=True) # remove all commas
+    dataframe = dataframe.replace({r',': '.'}, regex=True) # remove all commas
+    dataframe = dataframe.replace({r';': '.'}, regex=True) # remove all commas
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 
