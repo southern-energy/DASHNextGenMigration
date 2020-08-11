@@ -144,7 +144,7 @@ def read_table(url):
     #     print(len(dataframe.index))
 
     page_counter = 0
-    page_limiter = 3
+    page_limiter = 4
 
     while page_counter < page_limiter:
         browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
