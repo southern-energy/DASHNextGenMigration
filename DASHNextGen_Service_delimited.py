@@ -69,10 +69,6 @@ def login_into_dash(json_target_file):
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$Password").send_keys(password)
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$btnLogin").click()
 
-def download_excel():
-    browser.get("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=6")
-    browser.find_element_by_id("ContentPlaceHolder1_lnkExport").click()
-
 def read_table(url):
     browser.get(url)
 
@@ -111,9 +107,13 @@ def read_table(url):
 
 
     table_we_want = table_list[1].get_attribute('outerHTML')
+
+    print(table_we_want)
     
-    table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
-    table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
+    table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
+    table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
+
+    print('\nAFTER THE REGEX\n')
 
     print(table_we_want)
 
@@ -123,32 +123,8 @@ def read_table(url):
     print(len(dataframe.index))
     # print(dataframe)
     # print(len(dataframe.index))
-    
-    # This is the version that reads the number of items in the page and counts the items until all items have been read from the tables.
 
-    while int(len(dataframe.index)) < items:
-        browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
-        table_list = browser.find_elements_by_class_name('rgClipCells')
-        table_we_want = table_list[1].get_attribute('outerHTML')
-
-        # We need to apply the regext statements from earlier to each loop as well.
-
-        table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
-        table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
-
-        # print(table_we_want)
-        dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
-        print(len(dataframe.index))
-        time.sleep(5)
-    else:
-        print("We are done scraping.")
-        print(dataframe)
-        print(len(dataframe.index))
-
-    # page_counter = 0
-    # page_limiter = 7
-
-    # while page_counter < page_limiter:
+    # while int(len(dataframe.index)) < items:
     #     browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
     #     table_list = browser.find_elements_by_class_name('rgClipCells')
     #     table_we_want = table_list[1].get_attribute('outerHTML')
@@ -162,12 +138,33 @@ def read_table(url):
     #     dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
     #     print(len(dataframe.index))
     #     time.sleep(5)
-    #     page_counter += 1
     # else:
     #     print("We are done scraping.")
     #     print(dataframe)
     #     print(len(dataframe.index))
 
+    page_counter = 0
+    page_limiter = 3
+
+    while page_counter < page_limiter:
+        browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
+        table_list = browser.find_elements_by_class_name('rgClipCells')
+        table_we_want = table_list[1].get_attribute('outerHTML')
+
+        # We need to apply the regext statements from earlier to each loop as well.
+
+        table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+        table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
+
+        # print(table_we_want)
+        dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
+        print(len(dataframe.index))
+        time.sleep(5)
+        page_counter += 1
+    else:
+        print("We are done scraping.")
+        print(dataframe)
+        print(len(dataframe.index))
 
     """
     Here we must reorder the columns so our data can be compatible with older DASH Information
@@ -180,46 +177,71 @@ def read_table(url):
 
     # dataframe.to_csv("Export_Before_Builder_Project.csv", encoding="utf-8", index=False)
 
-    # dataframe = dataframe[dataframe.columns.drop(1)]
 
-    # dataframe.to_csv("Export_After_Builder_Project_col_Drop.csv", encoding="utf-8", index=False)
+    dataframe.to_csv("DASH_Service_BeforeReorder.csv", encoding="utf-8", index=False)
 
-    dataframe = dataframe[[0,2,4,5,6,1,7,3,8,9,10,11,13]]
+    dataframe = dataframe[[1,0,2,3,4,11,10,5,6,7,8,9,16,17,18,19,12,13,14,15]]
+
+    #TODO: We have to name the columns for this dataframe as well.
+     
+    dataframe = dataframe.rename(columns={1:"ServiceID",0:"RatingID",2:"ServiceName",3:"ServiceDate",4:"Employee",11:"PONumber",10:"Price",5:"TestingComplete",6:"DataEntryComplete",7:"Reschedule",8:"Reinspection",9:"RescheduledDate",16:"DateEntered",17:"EnteredBy",18:"LastUpdated",19:"LastUpdatedBy",12:"Checkbox3Value",13:"EmployeeTime5",14:"EmployeeTime6",15:"EmployeeTime7"})
+
+    """Please remember to change the columns for each report"""
+
+    dataframe['LastUpdated'].astype('datetime64[ns]')
+    dataframe['DateEntered'].astype('datetime64[ns]')
+    pd.to_datetime(dataframe['ServiceDate'], utc=False)
+    pd.to_datetime(dataframe['RescheduledDate'], utc=False)
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
     # dataframe.to_csv("Export.csv", encoding="utf-8", index=False)
     
-    dataframe = dataframe.replace({',': '.'}, regex=True) # remove all commas
-    dataframe = dataframe.replace({';': '.'}, regex=True) # remove all semicolons
+    dataframe = dataframe.replace({r',': '.'}, regex=True) # remove all commas
+    dataframe = dataframe.replace({r';': '.'}, regex=True) # remove all semicolons
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 
-    # Remove the previous "DASH_Service_TSheets.csv" file.
-    if os.path.exists("DASH_Service_TSheets.csv"):
-        os.remove("DASH_Service_TSheets.csv")
+    # Remove the previous "DASH_Service_Export.csv" file.
+    if os.path.exists("DASH_Service_Export.csv"):
+        os.remove("DASH_Service_Export.csv")
     else:
         print("We do not have to remove the file.")
 
-     
-    dataframe = dataframe.rename(columns={0:"RatingID",2:"Address",4:"City",5:"State",6:"Zip",1:"Builder",7:"Subdivision",3:"Lot",8:"ServiceID",9:"ServiceType",10:"ServiceDate",11:"Employee",13:"LastUpdated"})
 
-    dataframe['LastUpdated'].astype('datetime64[ns]')
-    pd.to_datetime(dataframe['ServiceDate'], utc=False)
+    dataframe.to_csv("DASH_Service_Export.csv", index=False)
 
-    '''
-    List we must match.
-    ["RatingID","Address","City","State","Zip","Builder","Subdivision","Lot","ServiceID","ServiceType","ServiceDate","Employee","LastUpdated"]
-    '''
+def csv_to_database():
 
-    dataframe.to_csv("DASH_Service_TSheets.csv", index=True)
+    mydb = MySQLdb.connect(
+        host='104.154.197.202',
+        port=3306,
+        user='gregory_power',
+        passwd='p0w3r_B33Gee$',
+        db='sem_dash_test_temp',
+        charset='utf8',
+        local_infile = 1)
 
+    cursor = mydb.cursor()
+    
+    # Point to the file that we want to grab.
+
+    path= os.getcwd()+"\\DASH_Service_Export.csv"
+    print (path+"\\")
+    path = path.replace('\\', '/')
+    
+    cursor.execute('LOAD DATA LOCAL INFILE \"'+ path +'\" REPLACE INTO TABLE `service` FIELDS TERMINATED BY \',\' ignore 1 lines;')
+    
+    # #close the connection to the database.
+    mydb.commit()
+    cursor.close()
 
 def main():
     """
     Please use these to control the previously defined functions.
     """
     login_into_dash("./DASHLoginInfo.json")
-    read_table("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=8")
+    read_table("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=18")
+    csv_to_database()
 
 main()
