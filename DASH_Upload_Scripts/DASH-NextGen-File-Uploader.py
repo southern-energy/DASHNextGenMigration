@@ -142,4 +142,3 @@ def beep_when_done():
 
 
 beep_when_done()
-quit()
