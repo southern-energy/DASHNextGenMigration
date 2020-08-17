@@ -200,7 +200,7 @@ def csv_to_database():
         port=3306,
         user='gregory_power',
         passwd='p0w3r_B33Gee$',
-        db='sem_dash_test_temp',
+        db='sem_dash',
         charset='utf8',
         local_infile = 1)
 
