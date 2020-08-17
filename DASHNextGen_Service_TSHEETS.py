@@ -104,8 +104,8 @@ def read_table(url):
  
     
     # We have to grab table headings from the report.
-    table_headers_table = table_list[0]
-    print(table_headers_table)
+    # table_headers_table = table_list[0]
+    # print(table_headers_table)
 
     # table_headers_table_table_row_element = browser.find_element_by_xpath("/html/body/form/div[4]/div[3]/div[6]/div[6]/div[1]/div/table/thead/tr[1]").get_attribute('outerHTML')
 
@@ -115,7 +115,7 @@ def read_table(url):
     table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
     table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
 
-    print(table_we_want)
+    # print(table_we_want)
 
     dataframe = pd.DataFrame()
 
@@ -184,7 +184,7 @@ def read_table(url):
 
     # dataframe.to_csv("Export_After_Builder_Project_col_Drop.csv", encoding="utf-8", index=False)
 
-    dataframe = dataframe[[0,2,4,5,6,1,7,3,8,9,10,11,13]]
+    dataframe = dataframe[[0,2,4,5,6,1,7,3,8,9,10,11,12]]
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
@@ -220,6 +220,6 @@ def main():
     Please use these to control the previously defined functions.
     """
     login_into_dash("./DASHLoginInfo.json")
-    read_table("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=8")
+    read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1255")
 
 main()

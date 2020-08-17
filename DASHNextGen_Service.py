@@ -60,7 +60,7 @@ def login_into_dash(json_target_file):
 
 
     """
-    browser.get("http://privdemo.myeldash.com/")
+    browser.get("http://sem.myirate.com/")
     with open(json_target_file) as login_data:
         data = json.load(login_data)
     username = data['username']
@@ -219,7 +219,7 @@ def main():
     Please use these to control the previously defined functions.
     """
     login_into_dash("./DASHLoginInfo.json")
-    read_table("http://privdemo.myeldash.com/Reports/AdHoc_View.aspx?id=18")
+    read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1306")
     csv_to_database()
 
 main()
