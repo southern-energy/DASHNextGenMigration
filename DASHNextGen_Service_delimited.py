@@ -178,7 +178,7 @@ def read_table(url):
     # dataframe.to_csv("Export_Before_Builder_Project.csv", encoding="utf-8", index=False)
 
 
-    dataframe.to_csv("DASH_Service_BeforeReorder.csv", encoding="utf-8", index=False)
+    # dataframe.to_csv("DASH_Service_BeforeReorder.csv", encoding="utf-8", index=False)
 
     dataframe = dataframe[[1,0,2,3,4,11,10,5,6,7,8,9,16,17,18,19,12,13,14,15]]
 
@@ -204,6 +204,7 @@ def read_table(url):
 
     # Remove the previous "DASH_Service_Export.csv" file.
     if os.path.exists("DASH_Service_Export.csv"):
+        print("Removing prexisting DASH_Service_Export.csv file")
         os.remove("DASH_Service_Export.csv")
     else:
         print("We do not have to remove the file.")
@@ -242,6 +243,6 @@ def main():
     """
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1306")
-    csv_to_database()
+    # csv_to_database()
 
 main()

@@ -220,6 +220,6 @@ def main():
     """
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1306")
-    csv_to_database()
+    # csv_to_database()
 
 main()
