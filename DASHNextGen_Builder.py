@@ -196,7 +196,6 @@ def csv_to_database(json_target_file):
         charset=data["charset"],
         local_infile=data["local_infile"])
 
-
     cursor = mydb.cursor()
     
     # Point to the file that we want to grab.
@@ -205,17 +204,8 @@ def csv_to_database(json_target_file):
     print (path+"\\")
     path = path.replace('\\', '/')
     
-    for index,row in builder_dataframe.iterrows():
-        cursor.execute(
-                        'Insert INTO builder(BuilderID,BuilderName,ABBName,CRMRep,Active,DateEntered)'\
-                        'VALUES(%s,%s,%s,%s,%s,%s) \
-                        ON DUPLICATE KEY UPDATE BuilderName=%s,ABBName=%s,CRMRep=%s,Active=%s,DateEntered=%s',\
-                        (row['BuilderID'], \
-                        row['BuilderName'],row['ABBName'],row['CRMRep'],row['Active'],row['DateEntered'],\
-                        row['BuilderName'],row['ABBName'],row['CRMRep'],row['Active'],row['DateEntered'])
-                        )
+    cursor.execute('LOAD DATA LOCAL INFILE \"'+ path +'\" REPLACE INTO TABLE `builder` FIELDS TERMINATED BY \',\' ignore 1 lines;')
     
-
     # #close the connection to the database.
     mydb.commit()
     cursor.close()
