@@ -1,3 +1,7 @@
+"""
+This script has been deprecated in favor of DASHNextGen_Service_Report.py.
+"""
+
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
