@@ -149,7 +149,7 @@ def main():
     time.sleep(5)
     grab_downloaded_report()
     file_cleanup()
-    # csv_to_database("./DASHLoginInfo.json")
+    csv_to_database("./DASHLoginInfo.json")
 
 
 main()
