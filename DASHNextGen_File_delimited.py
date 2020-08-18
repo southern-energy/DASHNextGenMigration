@@ -196,16 +196,18 @@ def read_table(url):
 
     dataframe.to_csv("DASH_Job_Export.csv", index=False)
 
-def csv_to_database():
+def csv_to_database(json_target_file):
+    with open(json_target_file) as login_data:
+        data = json.load(login_data)
 
     mydb = MySQLdb.connect(
-        host='104.154.197.202',
-        port=3306,
-        user='gregory_power',
-        passwd='p0w3r_B33Gee$',
-        db='sem_dash',
-        charset='utf8',
-        local_infile = 1)
+        host=data["host"],
+        port=int(data["port"]),
+        user=data["user"],
+        passwd=data["passwd"],
+        db=data["db"],
+        charset=data["charset"],
+        local_infile=data["local_infile"])
 
     cursor = mydb.cursor()
     
@@ -229,6 +231,6 @@ def main():
     """
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1311")
-    csv_to_database()
+    csv_to_database("./DASHLoginInfo.json")
 
 main()
