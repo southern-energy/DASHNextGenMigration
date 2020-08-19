@@ -162,7 +162,7 @@ def read_table(url):
     dataframe = dataframe[[0,2,3,4,1,5]]
     dataframe = dataframe.rename(columns={0:"ServiceID",2:"BuilderName",3:"AbbName",4:"Website",1:"Active",5:"DateEntered"})
 
-    dataframe['DateEntered'].astype('datetime64[ns]')
+    dataframe['DateEntered'] =  pd.to_datetime(dataframe['DateEntered'])
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
@@ -214,8 +214,10 @@ def main():
     """
     Please use these to control the previously defined functions.
     """
+    print("DASHNextGen_Builder.py is Starting")
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1309")
     csv_to_database("./DASHLoginInfo.json")
+    print("DASHNextGen_Builder.py is Done")
 
 main()

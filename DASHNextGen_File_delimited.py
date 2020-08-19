@@ -100,8 +100,8 @@ def read_table(url):
  
     
     # We have to grab table headings from the report.
-    table_headers_table = table_list[0]
-    print(table_headers_table)
+    # table_headers_table = table_list[0]
+    # print(table_headers_table)
 
     # table_headers_table_table_row_element = browser.find_element_by_xpath("/html/body/form/div[4]/div[3]/div[6]/div[6]/div[1]/div/table/thead/tr[1]").get_attribute('outerHTML')
 
@@ -229,8 +229,10 @@ def main():
     """
     Please use these to control the previously defined functions.
     """
+    print("DASHNextGen_File_delimited.py is Starting")
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1311")
     csv_to_database("./DASHLoginInfo.json")
+    print("DASHNextGen_File_delimited.py is Done")
 
 main()

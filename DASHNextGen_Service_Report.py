@@ -8,6 +8,7 @@ import time
 import os
 import pandas as pd
 import MySQLdb
+import ctypes
 
 profile = webdriver.FirefoxProfile()
 profile.set_preference('browser.download.folderList', 2)
@@ -16,7 +17,7 @@ profile.set_preference('browser.download.folderList', 2)
 SET PREFERRED DIRECTORY TO CURRENT ROOT DIRECTORY OF THIS SCRIPT!
 """
 
-preferred_directory = 'C:\\Users\\SEM\\Desktop\\Python Projects\\DashNextGenMigration\\'
+preferred_directory = 'G:\\My Drive\\PythonDev\\DASHNextGenMigration\\'
 
 profile.set_preference('browser.download.dir', preferred_directory)
 profile.set_preference('browser.download.manager.showWhenStarting', False)
@@ -72,10 +73,15 @@ def navigate_to_reports_and_click_excel():
         print("Previous Report Removed")
     else:
         print("Your directory was clean.")
-
+    print("Sleeping for 5 seconds.")
+    time.sleep(5)
+    print("Done Sleeping")
     browser.find_element_by_id('ContentPlaceHolder1_lnkExport').click()
 
 def grab_downloaded_report():
+    print("Sleeping for 5 seconds.")
+    time.sleep(5)
+    print("Done Sleeping")
     df = pd.read_html("report.xls", header=0)[0]
     # print(df)
 
@@ -143,6 +149,7 @@ def main():
     """
     Please use these to control the previously defined functions.
     """
+    print("DASHNextGen_Service_Report.py is Starting")
     login_into_dash("./DASHLoginInfo.json")
     navigate_to_reports_and_click_excel()
     browser.quit()
@@ -160,3 +167,4 @@ if os.path.exists("geckodriver.log"):
         os.remove("geckodriver.log")
 else:
     print("We do not have to remove the file.")
+print("DASHNextGen_Service_Report.py is Done")
