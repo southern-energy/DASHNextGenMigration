@@ -17,7 +17,7 @@ profile.set_preference('browser.download.folderList', 2)
 SET PREFERRED DIRECTORY TO CURRENT ROOT DIRECTORY OF THIS SCRIPT!
 """
 
-preferred_directory = 'G:\\My Drive\\PythonDev\\DASHNextGenMigration\\'
+preferred_directory = os.getcwd() # 'G:\\My Drive\\PythonDev\\DASHNextGenMigration\\'
 
 profile.set_preference('browser.download.dir', preferred_directory)
 profile.set_preference('browser.download.manager.showWhenStarting', False)
