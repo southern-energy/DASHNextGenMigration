@@ -3,3 +3,6 @@
 chromedriver.exe
 *.csv
 *.xls
+*.ini
+/__pycache__
+*.log
