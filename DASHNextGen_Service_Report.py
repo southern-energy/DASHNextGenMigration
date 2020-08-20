@@ -110,7 +110,7 @@ def grab_downloaded_report():
     else:
         print("We do not have to remove the file.")
 
-    df.to_csv("DASH_Service_Report_Export.csv")
+    df.to_csv("DASH_Service_Report_Export.csv", index=False)
 
 def csv_to_database(json_target_file):
     with open(json_target_file) as login_data:
