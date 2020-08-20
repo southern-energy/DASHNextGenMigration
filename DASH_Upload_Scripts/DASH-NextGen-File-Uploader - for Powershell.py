@@ -23,23 +23,26 @@ import winsound
 """
 This was the original method I was using when developing this script, please run this if you are curious of what is happening under the hood of Selenium or you need to troubleshoot any issues.
 """
-# print("Real Browser Launching")
-# browser = webdriver.Chrome(ChromeDriverManager().install())
-# print("Real Browser has Launched")
+print("Real Browser Launching")
+options = Options()
+options.add_argument('start-maximized')
+options.add_argument('disable-infobars')
+browser = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
+print("Real Browser has Launched")
 
 """
 The Headless browsing option greatly reduces the amount of time it takes for the scraper to run.
 """
-print("Headless Browser Running")
-options = Options()
-options.add_argument("--headless") # Runs Chrome in headless mode.
-options.add_argument('--no-sandbox') # Bypass OS security model
-options.add_argument('--disable-gpu')  # applicable to windows os only
-options.add_argument('start-maximized') # 
-options.add_argument('disable-infobars')
-options.add_argument("--disable-extensions")
-browser = webdriver.Chrome(chrome_options=options, executable_path=ChromeDriverManager().install())
-print("Headless Browser has Launched")
+# print("Headless Browser Running")
+# options = Options()
+# options.add_argument("--headless") # Runs Chrome in headless mode.
+# options.add_argument('--no-sandbox') # Bypass OS security model
+# options.add_argument('--disable-gpu')  # applicable to windows os only
+# options.add_argument('start-maximized') # 
+# options.add_argument('disable-infobars')
+# options.add_argument("--disable-extensions")
+# browser = webdriver.Chrome(chrome_options=options, executable_path=ChromeDriverManager().install())
+# print("Headless Browser has Launched")
 
 def login_into_dash(json_target_file):
     """
@@ -104,10 +107,21 @@ def navigate_to_downloads_and_upload_file():
     
         # browser.get("http://sem.myirate.com/Jobs/NewConst_Edit_File.aspx?id=33&j=486")
         files_table = browser.find_element_by_id("ctl00_ContentPlaceHolder1_rgUploadedFiles_ctl00").get_attribute("outerHTML")
-        df = pd.read_html(files_table)
-        df[0].drop(index=0)
-        file_label_list = df[0].Description.tolist()
-        if (any(item.startswith('HERS Certificate') for item in file_label_list)) == True:
+
+        soup = BeautifulSoup(files_table, "html.parser")
+
+        for tr in soup.find_all("tr",{'class':'rgGroupHeader'}):
+            tr.decompose()
+        # print(soup)
+        df = pd.read_html(str(soup), header=0)[0]
+        file_label_list = df[["Description"]].Description.tolist()
+
+
+        stringified_file_label_list = []
+        for labels in file_label_list:
+            stringified_file_label_list.append(str(labels))
+            
+        if (any(item.startswith('HERS Certificate') for item in stringified_file_label_list)) == True:
             print(True)
             print("You already have a HERS Certificate Uploaded")
             # We should consider adding function that removes existing script so we can re-upload anyways.
@@ -122,26 +136,37 @@ def navigate_to_downloads_and_upload_file():
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_FileType1_Input").send_keys("HERS Certificate - Ekotrope",Keys.ENTER)
             print(str(absolute_path_list[absolute_path_iterator]))
             browser.find_element_by_css_selector("#File1file0").send_keys(str(absolute_path_list[absolute_path_iterator]))
-            print("Sleeping for 2 seconds")
-            time.sleep(2)
+            print("Sleeping for 5 seconds")
+            time.sleep(5)
             browser.find_element_by_name("ctl00$ContentPlaceHolder1$btnSaveFiles").click()
-            time.sleep(2) # We have saved the file!
 
             """
-            Now we have to click the button to make sure that the builder has access to the uploaded certificate 🙃.
+            Now we have to click the button to make sure that the builder has access to the uploaded certificate.
             """
-            browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$EditButton").click()
+            try:
+                WebDriverWait(browser,5).until(EC.presence_of_element_located((By.ID,"ContentPlaceHolder1_btnSaveFiles")))
+            finally:
+                browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$EditButton").click()
 
             # Now we wait until the box with the check boxes is selectable.
 
             try:
-                WebDriverWait(browser,2).until(EC.presence_of_element_located((By.ID, "ctl00_ContentPlaceHolder1_rgUploadedFiles_ctl00_ctl05_ctl02")))
+                time.sleep(1)
+                WebDriverWait(browser,5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rgUploadedFiles_ctl00_ctl05_ctl02"]')))
             finally:
                 if browser.find_element_by_id("ctl00_ContentPlaceHolder1_rgUploadedFiles_ctl00_ctl05_ctl02").is_selected() == False:
-                    browser.find_element_by_id("ctl00_ContentPlaceHolder1_rgUploadedFiles_ctl00_ctl05_ctl02").click()
+                    browser.find_element_by_xpath("//*[@id='ctl00_ContentPlaceHolder1_rgUploadedFiles_ctl00_ctl05_ctl02']")
+                    browser.execute_script("arguments[0].style.display = 'block';arguments[0].style.visibility = 'visible';",browser.find_element_by_xpath("//*[@id='ctl00_ContentPlaceHolder1_rgUploadedFiles_ctl00_ctl05_ctl02']"))
+                    time.sleep(1)
+                    try:
+                        browser.find_element_by_xpath("//*[@id='ctl00_ContentPlaceHolder1_rgUploadedFiles_ctl00_ctl05_ctl02']").click()
+                    except:
+                        WebDriverWait(browser,5).until(EC.element_to_be_clickable((By.XPATH,"//*[@id='ctl00_ContentPlaceHolder1_rgUploadedFiles_ctl00_ctl05_ctl02']"))).click()
+                    
                     print(f"Builder Checkbox for DASH" + str(ratingID))
                 else:
                     print("Something is broken, or the box is already checked.")
+            browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$UpdateButton")
             browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$UpdateButton").click()
 
             print(f"We have uploaded and saved DASH: " + str(ratingID))
