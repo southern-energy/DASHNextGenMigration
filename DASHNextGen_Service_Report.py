@@ -88,7 +88,7 @@ def grab_downloaded_report():
 
     df = df[['ServiceID','JobID','ServiceName','ServiceDate','Employee1', 'PONumber','Price','TestingComplete','DataEntryComplete','Reschedule','Reinspection','RescheduledDate','DateEntered','EnteredBy', 'LastUpdated','LastUpdatedBy','Employee1Time5','Employee1Time6','Employee1Time7']]
 
-    df = df.rename(columns={"JobID":"RatingID", "Employee1": "Employee", 'Employee1Time5':"EmployeeTime5",'Employee1Time6':"EmployeeTime6",'Employee1Time7':"EmployeeTime7"})
+    df.rename(columns={"JobID":"RatingID", "Employee1": "Employee", 'Employee1Time5':"EmployeeTime5",'Employee1Time6':"EmployeeTime6",'Employee1Time7':"EmployeeTime7"})
 
     df['LastUpdated'].astype('datetime64[ns]')
     df['DateEntered'].astype('datetime64[ns]')
@@ -164,8 +164,4 @@ main()
 
 browser.quit()
 
-if os.path.exists("geckodriver.log"):
-        os.remove("geckodriver.log")
-else:
-    print("We do not have to remove the file.")
 print("DASHNextGen_Service_Report.py is Done")
