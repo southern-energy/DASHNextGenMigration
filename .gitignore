@@ -7,4 +7,5 @@ chromedriver.exe
 /__pycache__
 *.log
 *.ipynb
-/DASH_Non-E-Star-Clicker/*.xlsx
+DASH_Non-E-Star-Clicker/*.xlsx
+DASH_Non-E-Star-Clicker/NonEnergyStarDashClickerSheet.xlsx
