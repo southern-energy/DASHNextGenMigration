@@ -73,7 +73,7 @@ def navigate_to_reports_and_click_excel():
         os.remove("report.xls")
         print("Previous Report Removed")
     else:
-        print("Your directory was clean.")
+        print("No report.xls file was present.")
     print("Sleeping for 5 seconds.")
     time.sleep(5)
     print("Done Sleeping")
@@ -86,14 +86,19 @@ def grab_downloaded_report():
     df = pd.read_html("report.xls", header=0)[0]
     # print(df)
 
-    df = df[['ServiceID','JobID','ServiceName','ServiceDate','Employee1', 'PONumber','Price','TestingComplete','DataEntryComplete','Reschedule','Reinspection','RescheduledDate','DateEntered','EnteredBy', 'LastUpdated','LastUpdatedBy','Employee1Time5','Employee1Time6','Employee1Time7']]
+    df = df[['ServiceID','JobID','ServiceName','ServiceDate','Employee1', 'PONumber', 'Price','TestingComplete','DataEntryComplete','Reschedule','Reinspection','RescheduledDate','DateEntered','EnteredBy', 'LastUpdated','LastUpdatedBy','Checkbox3Value','Employee1Time5','Employee1Time6','Employee1Time7']]
 
-    df.rename(columns={"JobID":"RatingID", "Employee1": "Employee", 'Employee1Time5':"EmployeeTime5",'Employee1Time6':"EmployeeTime6",'Employee1Time7':"EmployeeTime7"})
+    df.rename(columns={"JobID":"RatingID", "Employee1": "Employee", 'Employee1Time5':"EmployeeTime5",'Employee1Time6':"EmployeeTime6",'Employee1Time7':"EmployeeTime7", "Checkbox3Value":"readyToPrint"})
 
     df['LastUpdated'].astype('datetime64[ns]')
     df['DateEntered'].astype('datetime64[ns]')
     pd.to_datetime(df['ServiceDate'], utc=False)
     pd.to_datetime(df['RescheduledDate'], utc=False)
+
+    mask = df.applymap(type) != bool
+    d = {True: 'TRUE', False: 'FALSE'}
+
+    df = df.where(mask, df.replace(d))
 
     df = df.replace({r',': '.'}, regex=True) # remove all commas
     df = df.replace({r';': '.'}, regex=True) # remove all commas

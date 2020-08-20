@@ -6,3 +6,4 @@ chromedriver.exe
 *.ini
 /__pycache__
 *.log
+*.ipynb

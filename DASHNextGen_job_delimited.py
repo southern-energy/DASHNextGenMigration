@@ -179,6 +179,8 @@ def read_table(url):
 
     # dataframe = dataframe.rename(columns={1:"ServiceID",0:"RatingID",2:"ServiceName",3:"ServiceDate",4:"Employee",11:"PONumber",10:"Price",5:"TestingComplete",6:"DataEntryComplete",7:"Reschedule",8:"Reinspection",9:"RescheduledDate",16:"DateEntered",17:"EnteredBy",18:"LastUpdated",19:"LastUpdatedBy",12:"Checkbox3Value",13:"EmployeeTime5",14:"EmployeeTime6",15:"EmployeeTime7"})
 
+    dataframe[17] = dataframe[17].str[-8:]
+
     dataframe[18] = pd.to_datetime(dataframe[18], utc=False)
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
