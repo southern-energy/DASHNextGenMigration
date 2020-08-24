@@ -149,7 +149,7 @@ def navigate_to_downloads_and_upload_file():
                 browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$EditButton").click()
 
             # Now we wait until the box with the check boxes is selectable.
-
+            """
             try:
                 time.sleep(1)
                 WebDriverWait(browser,5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rgUploadedFiles_ctl00_ctl05_ctl02"]')))
@@ -168,7 +168,7 @@ def navigate_to_downloads_and_upload_file():
                     print("Something is broken, or the box is already checked.")
             browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$UpdateButton")
             browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$UpdateButton").click()
-
+            """
             print(f"We have uploaded and saved DASH: " + str(ratingID))
 
             shutil.move(path + '\\' + filename, newpath + "\\" + filename)
