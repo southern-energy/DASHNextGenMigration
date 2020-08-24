@@ -16,25 +16,25 @@ import json
 
 start_time = time.time()
 
-print("Browser Launching")
-options = webdriver.ChromeOptions()
-options.add_argument("start-maximized")
-options.add_argument("disable-infobars")
-options.add_argument("--disable-extensions")
-browser = webdriver.Chrome(executable_path=ChromeDriverManager().install())
-print("Browser has Launched")
+# print("Browser Launching")
+# options = webdriver.ChromeOptions()
+# options.add_argument("start-maximized")
+# options.add_argument("disable-infobars")
+# options.add_argument("--disable-extensions")
+# browser = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+# print("Browser has Launched")
 
 # Attempt to Run Chrome Headless (Without Window Popping Up)
-# print("Browser Launching Headless")
-# options = Options()
-# options.add_argument("--headless") # Runs Chrome in headless mode.
-# options.add_argument('--no-sandbox') # Bypass OS security model
-# options.add_argument('--disable-gpu')  # applicable to windows os only
-# options.add_argument('start-maximized') # 
-# options.add_argument('disable-infobars')
-# options.add_argument("--disable-extensions")
-# browser = webdriver.Chrome(chrome_options=options, executable_path=ChromeDriverManager().install())
-# print("Browser has Launched Headlessly")
+print("Browser Launching Headless")
+options = Options()
+options.add_argument("--headless") # Runs Chrome in headless mode.
+options.add_argument('--no-sandbox') # Bypass OS security model
+options.add_argument('--disable-gpu')  # applicable to windows os only
+options.add_argument('start-maximized') # 
+options.add_argument('disable-infobars')
+options.add_argument("--disable-extensions")
+browser = webdriver.Chrome(chrome_options=options, executable_path=ChromeDriverManager().install())
+print("Browser has Launched Headlessly")
 
 def login_into_dash(json_target_file):
     """
