@@ -8,4 +8,5 @@ import DASHNextGen_job_delimited
 # import DASHNextGen_Service_delimited (Deprecated in favor of DASHNextGen_Service_Report)
 # import DASHNextGen_Service_occurred (Deprecated in favor of DASHNextGen_Service_Report)
 import DASHNextGen_Service_Report
+import beeper_module
 print("DASHNextGen_Master.py is done")

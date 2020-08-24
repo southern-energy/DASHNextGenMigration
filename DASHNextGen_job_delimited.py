@@ -134,7 +134,7 @@ def read_table(url):
     #     print(len(dataframe.index))
 
     page_counter = 0
-    page_limiter = 66
+    page_limiter = 67
 
     while page_counter < page_limiter:
         browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
@@ -175,8 +175,10 @@ def read_table(url):
 
     # dataframe = dataframe[["Job ID","Job Number","Street Address","City","State","Zip","Client Name","Subdivision Name","Gas Utility","Electric Utility","Lot","Division Name","HERS","Bldg File","Date Entered","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link"]]
 
-    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,13,14,18,16,1,17]]
-
+    # dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,13,14,18,16,1,17]]
+    
+    # This it the proper order below.
+    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,13,14,18,15,16,17]]
     # dataframe = dataframe.rename(columns={1:"ServiceID",0:"RatingID",2:"ServiceName",3:"ServiceDate",4:"Employee",11:"PONumber",10:"Price",5:"TestingComplete",6:"DataEntryComplete",7:"Reschedule",8:"Reinspection",9:"RescheduledDate",16:"DateEntered",17:"EnteredBy",18:"LastUpdated",19:"LastUpdatedBy",12:"Checkbox3Value",13:"EmployeeTime5",14:"EmployeeTime6",15:"EmployeeTime7"})
 
     dataframe[17] = dataframe[17].str[-8:]

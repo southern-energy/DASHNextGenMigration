@@ -184,7 +184,7 @@ def read_table(url):
 
     # dataframe.to_csv("Export_After_Builder_Project_col_Drop.csv", encoding="utf-8", index=False)
 
-    dataframe = dataframe[[0,2,4,5,6,1,7,3,8,9,10,11,12]]
+    dataframe = dataframe[[0,1,2,3,4,5,6,7,8,9,10,11,12]]
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
@@ -202,9 +202,10 @@ def read_table(url):
         print("We do not have to remove the file.")
 
      
-    dataframe = dataframe.rename(columns={0:"RatingID",2:"Address",4:"City",5:"State",6:"Zip",1:"Builder",7:"Subdivision",3:"Lot",8:"ServiceID",9:"ServiceType",10:"ServiceDate",11:"Employee",13:"LastUpdated"})
+    dataframe = dataframe.rename(columns={0:"RatingID",1:"Address",2:"City",3:"State",4:"Zip",5:"Builder",6:"Subdivision",7:"Lot",8:"ServiceID",9:"ServiceType",10:"ServiceDate",11:"Employee",12:"LastUpdated"})
 
     dataframe['LastUpdated'].astype('datetime64[ns]')
+    pd.to_datetime(dataframe['LastUpdated'], utc=False)
     pd.to_datetime(dataframe['ServiceDate'], utc=False)
 
     '''
