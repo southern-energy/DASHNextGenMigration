@@ -3,6 +3,9 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.webdriver import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import requests
 import json
 import re
@@ -192,6 +195,13 @@ def read_table(url):
 
     dataframe.to_csv("DASH_Service_TSheets.csv", index=True)
 
+def logout_session():
+    browser.get("http://sem.myirate.com/Dashboard_Company.aspx")
+    browser.find_element_by_xpath('//*[@id="navProfile"]').click()
+    try:
+        WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.LINK_TEXT,"Log Out"))).click()
+    except:
+        WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.LINK_TEXT,"Log Out"))).click()
 
 def main():
     """
@@ -199,5 +209,7 @@ def main():
     """
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1255")
+    logout_session()
 
 main()
+browser.quit()

@@ -104,6 +104,14 @@ def read_excel_file_return_list():
                 print("Something is broken, or the box is already checked.")
     print("We are done.")
 
+def logout_session():
+    browser.get("http://sem.myirate.com/Dashboard_Company.aspx")
+    browser.find_element_by_xpath('//*[@id="navProfile"]').click()
+    try:
+        WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.LINK_TEXT,"Log Out"))).click()
+    except:
+        WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.LINK_TEXT,"Log Out"))).click()
+
 def beep_when_done():
     #Attributes
     duration_short = 100  # milliseconds
@@ -117,7 +125,9 @@ def beep_when_done():
 def main():
     login_into_dash("./DASHLoginInfo.json")
     read_excel_file_return_list()
+    logout_session()
 main()
+browser.quit()
 
 beep_when_done()
 print("Script has completed all tasks in %s seconds." % (time.time() - start_time))

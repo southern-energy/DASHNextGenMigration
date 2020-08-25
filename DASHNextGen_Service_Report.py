@@ -3,6 +3,9 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import json
 import time
 import os
@@ -151,6 +154,14 @@ def file_cleanup():
     else:
         print("We do not have to remove the file.")
 
+def logout_session():
+    browser.get("http://sem.myirate.com/Dashboard_Company.aspx")
+    browser.find_element_by_xpath('//*[@id="navProfile"]').click()
+    try:
+        WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.LINK_TEXT,"Log Out"))).click()
+    except:
+        WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.LINK_TEXT,"Log Out"))).click()
+
 def main():
     """
     Please use these to control the previously defined functions.
@@ -163,6 +174,7 @@ def main():
     grab_downloaded_report()
     file_cleanup()
     csv_to_database("./DASHLoginInfo.json")
+    logout_session()
 
 
 main()

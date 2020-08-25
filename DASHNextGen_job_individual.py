@@ -159,6 +159,14 @@ def csv_to_database(json_target_file):
     mydb.commit()
     cursor.close()
 
+def logout_session():
+    browser.get("http://sem.myirate.com/Dashboard_Company.aspx")
+    browser.find_element_by_xpath('//*[@id="navProfile"]').click()
+    try:
+        WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.LINK_TEXT,"Log Out"))).click()
+    except:
+        WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.LINK_TEXT,"Log Out"))).click()
+
 def main():
     """
     Please use these to control the previously defined functions.
@@ -168,6 +176,7 @@ def main():
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1322", DASH_ID_List)
     # csv_to_database("./DASHLoginInfo.json")
+    logout_session()
     print("DASHNextGen_job_individual.py is Done")
 
 main()

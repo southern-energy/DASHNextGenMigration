@@ -174,6 +174,14 @@ def navigate_to_downloads_and_upload_file():
             shutil.move(path + '\\' + filename, newpath + "\\" + filename)
             absolute_path_iterator += 1
 
+def logout_session():
+    browser.get("http://sem.myirate.com/Dashboard_Company.aspx")
+    browser.find_element_by_xpath('//*[@id="navProfile"]').click()
+    try:
+        WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.LINK_TEXT,"Log Out"))).click()
+    except:
+        WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.LINK_TEXT,"Log Out"))).click()
+
 def beep_when_done():
     #Attributes
     duration_short = 100  # milliseconds
@@ -189,6 +197,7 @@ def main():
     login_into_dash("./DASHLoginInfo.json")
     navigate_to_downloads_and_upload_file()
     beep_when_done()
+    logout_session()
 
 main()
 browser.quit()
