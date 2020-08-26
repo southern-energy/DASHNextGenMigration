@@ -167,7 +167,8 @@ def read_table(url):
         - Remove Project Name Column
         - Rearranging the columns to align with the database schema.
     """
-
+    # keys = ['RatingID', 'JobNumber', 'Address', 'City', 'State', 'Zip', 'Builder', 'Subdivision', 'GasUtility', 'ElectricUtility', 'Lot', 'Division', 'HERSIndex', 'BldgFile', 'DateEntered', 'EkotropeStatus', 'EkotropeProjectName', 'EkotropeProjectLink']
+    #TODO: Label these columns.
     dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,13,14,18,15,16,17]]
    
     # dataframe = dataframe.rename(columns={1:"ServiceID",0:"RatingID",2:"ServiceName",3:"ServiceDate",4:"Employee",11:"PONumber",10:"Price",5:"TestingComplete",6:"DataEntryComplete",7:"Reschedule",8:"Reinspection",9:"RescheduledDate",16:"DateEntered",17:"EnteredBy",18:"LastUpdated",19:"LastUpdatedBy",12:"Checkbox3Value",13:"EmployeeTime5",14:"EmployeeTime6",15:"EmployeeTime7"})
