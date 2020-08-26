@@ -23,26 +23,26 @@ import winsound
 """
 This was the original method I was using when developing this script, please run this if you are curious of what is happening under the hood of Selenium or you need to troubleshoot any issues.
 """
-print("Real Browser Launching")
-options = Options()
-options.add_argument('start-maximized')
-options.add_argument('disable-infobars')
-browser = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
-print("Real Browser has Launched")
+# print("Real Browser Launching")
+# options = Options()
+# options.add_argument('start-maximized')
+# options.add_argument('disable-infobars')
+# browser = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
+# print("Real Browser has Launched")
 
 """
 The Headless browsing option greatly reduces the amount of time it takes for the scraper to run.
 """
-# print("Headless Browser Running")
-# options = Options()
-# options.add_argument("--headless") # Runs Chrome in headless mode.
-# options.add_argument('--no-sandbox') # Bypass OS security model
-# options.add_argument('--disable-gpu')  # applicable to windows os only
-# options.add_argument('start-maximized') # 
-# options.add_argument('disable-infobars')
-# options.add_argument("--disable-extensions")
-# browser = webdriver.Chrome(chrome_options=options, executable_path=ChromeDriverManager().install())
-# print("Headless Browser has Launched")
+print("Headless Browser Running")
+options = Options()
+options.add_argument("--headless") # Runs Chrome in headless mode.
+options.add_argument('--no-sandbox') # Bypass OS security model
+options.add_argument('--disable-gpu')  # applicable to windows os only
+options.add_argument('start-maximized') # 
+options.add_argument('disable-infobars')
+options.add_argument("--disable-extensions")
+browser = webdriver.Chrome(options=options, executable_path=ChromeDriverManager().install())
+print("Headless Browser has Launched")
 
 def login_into_dash(json_target_file):
     """
@@ -165,22 +165,22 @@ def navigate_to_downloads_and_upload_file():
                     
                     print(f"Builder Checkbox for DASH" + str(ratingID))
                 else:
-                    print("Something is broken, or the box is already checked.")
-            browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$UpdateButton")
-            browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$UpdateButton").click()
+                    print("Box is already checked.")
+            try:
+                browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$UpdateButton")
+                browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$UpdateButton").click()
+                print("We did not have to to wait to submit the file.")
+                print(f"File for " + str(ratingID) + " submitted.")
+            except:
+                print("We had to wait to submit the file.")
+                WebDriverWait(browser,2).until(EC.element_to_be_clickable((By.NAME,'ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$UpdateButton')))
+                browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$UpdateButton").click()
+                print(f"File for " + str(ratingID) + " submitted.")
 
             print(f"We have uploaded and saved DASH: " + str(ratingID))
 
             shutil.move(path + '\\' + filename, newpath + "\\" + filename)
             absolute_path_iterator += 1
-
-def logout_session():
-    browser.get("http://sem.myirate.com/Dashboard_Company.aspx")
-    browser.find_element_by_xpath('//*[@id="navProfile"]').click()
-    try:
-        WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.LINK_TEXT,"Log Out"))).click()
-    except:
-        WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.LINK_TEXT,"Log Out"))).click()
 
 def beep_when_done():
     #Attributes
@@ -196,7 +196,6 @@ def beep_when_done():
 def main():
     login_into_dash("./DASHLoginInfo.json")
     navigate_to_downloads_and_upload_file()
-    logout_session()
     beep_when_done()
 
 main()
