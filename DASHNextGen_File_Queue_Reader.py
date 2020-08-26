@@ -197,7 +197,7 @@ def main():
     print("DASHNextGen_File_delimited.py is Starting")
     read_energystar_and_non_energy_star_queue_tabs()
     login_into_dash("./DASHLoginInfo.json")
-    read_table("Needs Custom Report", DASH_ID_List)
+    read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1323", DASH_ID_List)
     csv_to_database("./DASHLoginInfo.json")
     logout_session()
     print("DASHNextGen_File_delimited.py is Done")
