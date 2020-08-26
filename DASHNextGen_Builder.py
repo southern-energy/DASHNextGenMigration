@@ -107,8 +107,8 @@ def read_table(url):
  
     
     # We have to grab table headings from the report.
-    table_headers_table = table_list[0]
-    print(table_headers_table)
+    # table_headers_table = table_list[0]
+    # print(table_headers_table)
 
     # table_headers_table_table_row_element = browser.find_element_by_xpath("/html/body/form/div[4]/div[3]/div[6]/div[6]/div[1]/div/table/thead/tr[1]").get_attribute('outerHTML')
 
