@@ -35,7 +35,7 @@ options.add_argument('start-maximized') #
 options.add_argument('disable-infobars')
 options.add_argument("--disable-extensions")
 browser = webdriver.Chrome(chrome_options=options, executable_path=ChromeDriverManager().install())
-print("Browser has Launched 70Headlessly")
+print("Browser has Launched Headlessly")
 
 def read_energystar_and_non_energy_star_queue_tabs():
 
