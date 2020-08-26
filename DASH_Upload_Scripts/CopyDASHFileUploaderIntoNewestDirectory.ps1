@@ -1,7 +1,8 @@
 
 
 $latest_folder = Get-ChildItem -Path "G:\My Drive\SEM Print Tool\" | Sort-Object CreationTime -Descending | Select-Object -First 1
-$copy_DASH_File_Uploader = Copy-Item -Path "G:\My Drive\SEM Print Tool\DASH-NextGen-File-Uploader - for Powershell.py" -Destination $latest_folder
+$copy_DASH_File_Uploader = Copy-Item -Path "G:\My Drive\SEM Print Tool\DASHLoginInfo.json" -Destination $latest_folder
+$copy_DASH_File_Uploader_credentials = Copy-Item -Path "G:\My Drive\SEM Print Tool\DASH-NextGen-File-Uploader - for Powershell.py" -Destination $latest_folder
 $copy_certificate_folder_to_here = "\\redbull\public\SEM\Building Science Team\Energy Star Certification Material\HERC\2020\Q3"
 # $current_date_yyyy_mm_dd = Get-Date -Format "yyyy-mm-dd"
 

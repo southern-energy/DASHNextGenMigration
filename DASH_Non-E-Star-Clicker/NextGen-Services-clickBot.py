@@ -35,7 +35,7 @@ options.add_argument('start-maximized') #
 options.add_argument('disable-infobars')
 options.add_argument("--disable-extensions")
 browser = webdriver.Chrome(chrome_options=options, executable_path=ChromeDriverManager().install())
-print("Browser has Launched Headlessly")
+print("Browser has Launched 70Headlessly")
 
 def read_energystar_and_non_energy_star_queue_tabs():
 
@@ -63,9 +63,9 @@ def read_energystar_and_non_energy_star_queue_tabs():
 
     combined_list = Non_Energy_Star_Data + Energy_Star_DASH_IDs
 
-    # print(len(Non_Energy_Star_Data))
-    # print(len(Energy_Star_DASH_IDs))
-    # print(len(combined_list))
+    print(f"We grabbed " + str(len(Non_Energy_Star_Data)) + " Non Energy Star IDs.")
+    print(f"We grabbed " + str(len(Energy_Star_DASH_IDs)) + " Non Energy Star IDs.")
+    print(f"We have " + str(len(combined_list)) + " total DASH IDs.")
     global DASH_ID_List
     DASH_ID_List = combined_list
 
