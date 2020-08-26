@@ -81,22 +81,33 @@ def navigate_to_reports_and_click_excel():
     time.sleep(5)
     print("Done Sleeping")
     browser.find_element_by_id('ContentPlaceHolder1_lnkExport').click()
+    print("We have clicked the download report button.")
 
 def grab_downloaded_report():
-    print("Sleeping for 5 seconds.")
+    print("Sleeping for 5 seconds before we grab the file.")
     time.sleep(5)
     print("Done Sleeping")
-    df = pd.read_html("report.xls", header=0)[0]
+    try:
+        df = pd.read_html("report.xls", header=0)[0]
+        print("We didn't have to wait to sleep.")
+    except:
+        print("Sleeping for an additional 5 seconds.")
+        time.sleep(5)
+        df = pd.read_html("report.xls", header=0)[0]
     # print(df)
 
     df = df[['ServiceID','JobID','ServiceName','ServiceDate','Employee1', 'PONumber', 'Price','TestingComplete','DataEntryComplete','Reschedule','Reinspection','RescheduledDate','DateEntered','EnteredBy', 'LastUpdated','LastUpdatedBy','Checkbox3Value','Employee1Time5','Employee1Time6','Employee1Time7']]
 
     df.rename(columns={"JobID":"RatingID", "Employee1": "Employee", 'Employee1Time5':"EmployeeTime5",'Employee1Time6':"EmployeeTime6",'Employee1Time7':"EmployeeTime7", "Checkbox3Value":"readyToPrint"})
 
-    df['LastUpdated'].astype('datetime64[ns]')
-    df['DateEntered'].astype('datetime64[ns]')
-    pd.to_datetime(df['ServiceDate'], utc=False)
-    pd.to_datetime(df['RescheduledDate'], utc=False)
+    # Commented out lines below to due research: https://stackoverflow.com/a/53771905/7859870
+
+    # df['LastUpdated'].astype('datetime64[ns]')
+    # df['DateEntered'].astype('datetime64[ns]')
+    df['ServiceDate'] = pd.to_datetime(df['ServiceDate'], utc=False)
+    df['RescheduleDate'] = pd.to_datetime(df['RescheduledDate'], utc=False)
+    df['DateEntered'] = pd.to_datetime(df['DateEntered'], utc=False)
+    df['LastUpdated'] = pd.to_datetime(df['LastUpdated'], utc=False)
 
     mask = df.applymap(type) != bool
     d = {True: 'TRUE', False: 'FALSE'}
@@ -110,7 +121,7 @@ def grab_downloaded_report():
 
     # We want to grab the first 600 records, because the dataframe is 10000 recorsd long.
 
-    df = df[:601]
+    # df = df[:601] # This is used to limit how many rows we pull from the sheet.
 
     # Remove the previous "DASH_Service_Report_Export.csv" file.
     if os.path.exists("DASH_Service_Report_Export.csv"):
@@ -169,11 +180,11 @@ def main():
     print("DASHNextGen_Service_Report.py is Starting")
     login_into_dash("./DASHLoginInfo.json")
     navigate_to_reports_and_click_excel()
-    browser.quit()
     time.sleep(5)
     grab_downloaded_report()
-    file_cleanup()
     csv_to_database("./DASHLoginInfo.json")
+    file_cleanup()
+    print("We have uploaded to the database.")
     logout_session()
 
 
