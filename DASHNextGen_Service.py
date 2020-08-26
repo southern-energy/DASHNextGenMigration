@@ -104,25 +104,12 @@ def read_table(url):
 
     table_list = browser.find_elements_by_class_name('rgClipCells')
 
- 
-    
-    # We have to grab table headings from the report.
-    table_headers_table = table_list[0]
-    print(table_headers_table)
-
-    # table_headers_table_table_row_element = browser.find_element_by_xpath("/html/body/form/div[4]/div[3]/div[6]/div[6]/div[1]/div/table/thead/tr[1]").get_attribute('outerHTML')
-
-
     table_we_want = table_list[1].get_attribute('outerHTML')
 
-    print(table_we_want)
-    
     table_we_want = re.sub(r'<span.*?checked="checked" disabled="disabled"><\/span>?', 'True', table_we_want)
     table_we_want = re.sub(r'<span.*? disabled="disabled"><\/span>?', 'False', table_we_want)
 
     print('\nAFTER THE REGEX\n')
-
-    print(table_we_want)
 
     dataframe = pd.DataFrame()
 
@@ -158,11 +145,6 @@ def read_table(url):
         - Rearranging the columns to align with the database schema.
     """
 
-    # dataframe = dataframe[dataframe.columns.drop("Project Name")]
-
-    # dataframe.to_csv("Export_Before_Builder_Project.csv", encoding="utf-8", index=False)
-
-
     dataframe.to_csv("DASH_Service_BeforeReorder.csv", encoding="utf-8", index=False)
 
     dataframe = dataframe[[1,0,2,3,4,11,10,5,6,7,8,9,16,17,18,19,12,13,14,15]]
@@ -173,15 +155,9 @@ def read_table(url):
 
     """Please remember to change the columns for each report"""
 
-    dataframe['LastUpdated'].astype('datetime64[ns]')
-    dataframe['DateEntered'].astype('datetime64[ns]')
-    pd.to_datetime(dataframe['ServiceDate'], utc=False)
-    pd.to_datetime(dataframe['RescheduledDate'], utc=False)
+    dataframe['ServiceDate'] = pd.to_datetime(dataframe['ServiceDate'], utc=False)
+    dataframe['RescheduleDate'] = pd.to_datetime(dataframe['RescheduledDate'], utc=False)
 
-    # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
-
-    # dataframe.to_csv("Export.csv", encoding="utf-8", index=False)
-    
     dataframe = dataframe.replace({r',': '.'}, regex=True) # remove all commas
     dataframe = dataframe.replace({r';': '.'}, regex=True) # remove all semicolons
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
@@ -237,7 +213,7 @@ def main():
     """
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1306")
-    # csv_to_database("./DASHLoginInfo.json")
+    csv_to_database("./DASHLoginInfo.json")
     logout_session()
 
 main()

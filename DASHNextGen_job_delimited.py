@@ -137,7 +137,7 @@ def read_table(url):
     #     print(len(dataframe.index))
 
     page_counter = 0
-    page_limiter = 67
+    page_limiter = 100
 
     while page_counter < page_limiter:
         browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
@@ -152,7 +152,7 @@ def read_table(url):
         # print(table_we_want)
         dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
         print(len(dataframe.index))
-        time.sleep(5)
+        time.sleep(2)
         page_counter += 1
     else:
         print("We are done scraping.")
@@ -168,27 +168,13 @@ def read_table(url):
         - Rearranging the columns to align with the database schema.
     """
 
-    # dataframe = dataframe[dataframe.columns.drop("Project Name")]
-
-    # dataframe.to_csv("Export_Before_Builder_Project.csv", encoding="utf-8", index=False)
-
-    # dataframe = dataframe[dataframe.columns.drop(1)]
-
-    # dataframe.to_csv("Export_After_Builder_Project_col_Drop.csv", encoding="utf-8", index=False)
-
-    # dataframe = dataframe[["Job ID","Job Number","Street Address","City","State","Zip","Client Name","Subdivision Name","Gas Utility","Electric Utility","Lot","Division Name","HERS","Bldg File","Date Entered","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link"]]
-
-    # dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,13,14,18,16,1,17]]
-    
-    # This it the proper order below.
     dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,13,14,18,15,16,17]]
+   
     # dataframe = dataframe.rename(columns={1:"ServiceID",0:"RatingID",2:"ServiceName",3:"ServiceDate",4:"Employee",11:"PONumber",10:"Price",5:"TestingComplete",6:"DataEntryComplete",7:"Reschedule",8:"Reinspection",9:"RescheduledDate",16:"DateEntered",17:"EnteredBy",18:"LastUpdated",19:"LastUpdatedBy",12:"Checkbox3Value",13:"EmployeeTime5",14:"EmployeeTime6",15:"EmployeeTime7"})
 
     dataframe[17] = dataframe[17].str[-8:]
 
     dataframe[18] = pd.to_datetime(dataframe[18], utc=False)
-
-    # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
     dataframe = dataframe.replace({r',': '.'}, regex=True) # remove all commas
     dataframe = dataframe.replace({r';': '.'}, regex=True) # remove all commas

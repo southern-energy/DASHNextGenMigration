@@ -12,6 +12,7 @@ import re
 import pandas as pd
 from datetime import datetime
 import time
+import gspread
 
 # Imports from Will's Previous Work
 from robobrowser import RoboBrowser #for navigating and form submission
@@ -75,9 +76,36 @@ def login_into_dash(json_target_file):
 #TODO: Add way to connect to Non-Energy Star Sheet and Rob's Energy Star Sheet
 
 def read_energystar_and_non_energy_star_queue_tabs():
-    print("We are starting this process.")
+
+    """
+    This section uses gspread and the Google API to access the Non-E* Process Sheet and the Energy Star Process Sheet 
+    """
+    # We had to create a Google API Credentials Key, which we access.
+    gc = gspread.service_account(filename="google_api_credentials.json")
+    
+    # The Key is https://docs.google.com/spreadsheets/d/<THIS PART OF THE ADDRESS>/edit#gid=
+    sh = gc.open_by_key('1necFt4Dobp7E_hlUzcIHSlVneB5zB3DzwQZcZmDH0uE')
+    worksheet = sh.worksheet('Queue Copy for Print Tool')
+
+    Non_Energy_Star_Data = worksheet.col_values(1)[1:]
+
+    # print(Non_Energy_Star_Data)
+
+    Energy_Star_Sheet = gc.open_by_key('1vIPJSB35NqJMVbjHq9X5NjmWll60C2wqTncNpK7ic7Y')
+
+    queue_for_print_tool_sheet = Energy_Star_Sheet.worksheet('Queue Copy for Print Tool')
+
+    Energy_Star_DASH_IDs = queue_for_print_tool_sheet.col_values(1)[1:]
+
+    # print(Energy_Star_DASH_IDs)
+
+    combined_list = Non_Energy_Star_Data + Energy_Star_DASH_IDs
+
+    # print(len(Non_Energy_Star_Data))
+    # print(len(Energy_Star_DASH_IDs))
+    # print(len(combined_list))
     global DASH_ID_List
-    DASH_ID_List = ["66867"]
+    DASH_ID_List = combined_list
 
 def read_table(url, DASH_List):
     browser.get(url)
@@ -88,9 +116,8 @@ def read_table(url, DASH_List):
     for index, DASH_ID in enumerate(DASH_ID_List):
         print(f"We are on DASH ID " + str(DASH_ID) + " number " + str(int(index)+1) + " of " + str(len(DASH_ID_List)))
         print(f"Grabbing page for DASH " + str(DASH_ID))
-        print(f"Position " + str(len(DASH_ID_List)))
         try:
-            WebDriverWait(browser,2).until(EC.element_to_be_clickable((By.ID,"ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl04")))
+            WebDriverWait(browser,1).until(EC.element_to_be_clickable((By.ID,"ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl04")))
         finally:
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl04").click()
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl04").send_keys(Keys.CONTROL, "a")
@@ -98,7 +125,7 @@ def read_table(url, DASH_List):
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl04").send_keys(str(DASH_ID))
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ApplyButton").click()
             try:
-                WebDriverWait(browser,2).until(EC.visibility_of_element_located((By.ID,'ctl00_ContentPlaceHolder1_rgReport_ctl00__0')))
+                WebDriverWait(browser,1).until(EC.visibility_of_element_located((By.ID,'ctl00_ContentPlaceHolder1_rgReport_ctl00__0')))
             finally:
                 table_list = browser.find_elements_by_class_name('rgClipCells')
                 table_we_want = table_list[1].get_attribute('outerHTML')
@@ -114,7 +141,6 @@ def read_table(url, DASH_List):
     # ["RatingID","JobNumber","Address","City","State","Zip","Builder","Subdivision","GasUtility","ElectricUtility","Lot","Division","HERSIndex","BldgFile","DateEntered"]
 
     dataframe[17] = dataframe[17].str[-8:]
-
     dataframe[18] = pd.to_datetime(dataframe[18], utc=False)
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
@@ -124,13 +150,13 @@ def read_table(url, DASH_List):
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 
-    # Remove the previous "DASH_Job_Export_Individual.csv" file.
-    if os.path.exists("DASH_Job_Export_Individual.csv"):
-        os.remove("DASH_Job_Export_Individual.csv")
+    # Remove the previous "DASH_Job_Export_Queue_Reader.csv" file.
+    if os.path.exists("DASH_Job_Export_Queue_Reader.csv"):
+        os.remove("DASH_Job_Export_Queue_Reader.csv")
     else:
         print("We do not have to remove the file.")
 
-    dataframe.to_csv("DASH_Job_Export_Individual.csv", index=False)
+    dataframe.to_csv("DASH_Job_Export_Queue_Reader.csv", index=False)
 
 def csv_to_database(json_target_file):
     with open(json_target_file) as login_data:
@@ -149,7 +175,7 @@ def csv_to_database(json_target_file):
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\DASH_Job_Export_Individual.csv"
+    path= os.getcwd()+"\\DASH_Job_Export_Queue_Reader.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
     
@@ -175,7 +201,7 @@ def main():
     read_energystar_and_non_energy_star_queue_tabs()
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1322", DASH_ID_List)
-    # csv_to_database("./DASHLoginInfo.json")
+    csv_to_database("./DASHLoginInfo.json")
     logout_session()
     print("DASHNextGen_job_individual.py is Done")
 

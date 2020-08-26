@@ -151,7 +151,7 @@ def read_table(url):
     #     print(len(dataframe.index))
 
     page_counter = 0
-    page_limiter = 4
+    page_limiter = 10
 
     while page_counter < page_limiter:
         browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
@@ -195,10 +195,8 @@ def read_table(url):
 
     """Please remember to change the columns for each report"""
 
-    dataframe['LastUpdated'].astype('datetime64[ns]')
-    dataframe['DateEntered'].astype('datetime64[ns]')
-    pd.to_datetime(dataframe['ServiceDate'], utc=False)
-    pd.to_datetime(dataframe['RescheduledDate'], utc=False)
+    dataframe['ServiceDate'] = pd.to_datetime(dataframe['ServiceDate'], utc=False)
+    dataframe['RescheduleDate'] = pd.to_datetime(dataframe['RescheduledDate'], utc=False)
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
