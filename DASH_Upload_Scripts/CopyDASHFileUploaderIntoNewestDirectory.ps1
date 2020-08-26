@@ -8,6 +8,7 @@ $copy_certificate_folder_to_here = "\\redbull\public\SEM\Building Science Team\E
 
 
 $copy_DASH_File_Uploader
+$copy_DASH_File_Uploader_credentials
 
 Write-Output "We have copied DASH-NextGen-File-Uploader - for Powershell.py into the most most recent folder: $latest_folder"
 Set-Location $latest_folder
