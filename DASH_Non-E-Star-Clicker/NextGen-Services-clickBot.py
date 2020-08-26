@@ -11,6 +11,7 @@ import pandas as pd
 import time
 import winsound
 import json
+import gspread
 
 # Research Deeper Executing JS in Python https://seleniumwithjavapython.wordpress.com/selenium-with-python/intermediate-topics/playing-with-javascript-and-javascript-executor/hidden-elements-in-javascript/
 
@@ -36,6 +37,38 @@ options.add_argument("--disable-extensions")
 browser = webdriver.Chrome(chrome_options=options, executable_path=ChromeDriverManager().install())
 print("Browser has Launched Headlessly")
 
+def read_energystar_and_non_energy_star_queue_tabs():
+
+    """
+    This section uses gspread and the Google API to access the Non-E* Process Sheet and the Energy Star Process Sheet 
+    """
+    # We had to create a Google API Credentials Key, which we access.
+    gc = gspread.service_account(filename="google_api_credentials.json")
+    
+    # The Key is https://docs.google.com/spreadsheets/d/<THIS PART OF THE ADDRESS>/edit#gid=
+    sh = gc.open_by_key('1necFt4Dobp7E_hlUzcIHSlVneB5zB3DzwQZcZmDH0uE')
+    worksheet = sh.worksheet('Queue Copy for Print Tool')
+
+    Non_Energy_Star_Data = worksheet.col_values(1)[1:]
+
+    # print(Non_Energy_Star_Data)
+
+    Energy_Star_Sheet = gc.open_by_key('1vIPJSB35NqJMVbjHq9X5NjmWll60C2wqTncNpK7ic7Y')
+
+    queue_for_print_tool_sheet = Energy_Star_Sheet.worksheet('Queue Copy for Print Tool')
+
+    Energy_Star_DASH_IDs = queue_for_print_tool_sheet.col_values(1)[1:]
+
+    # print(Energy_Star_DASH_IDs)
+
+    combined_list = Non_Energy_Star_Data + Energy_Star_DASH_IDs
+
+    # print(len(Non_Energy_Star_Data))
+    # print(len(Energy_Star_DASH_IDs))
+    # print(len(combined_list))
+    global DASH_ID_List
+    DASH_ID_List = combined_list
+
 def login_into_dash(json_target_file):
     """
     Takes the login information from JSON file and passes data to login form.
@@ -60,13 +93,14 @@ def login_into_dash(json_target_file):
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$Password").send_keys(password)
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$btnLogin").click()
 
-def read_excel_file_return_list():
-    df = pd.read_excel('./NonEnergyStarDashClickerSheet.xlsx', header=0, usecols=0, index_col=None, converters={'DASHID':str})
-    dash_id_list = df['DASHID'].tolist()
-    # dash_id_list = ["69990"]
-    print(dash_id_list)
-    print(f"We have " + str(len(dash_id_list)) + " DASH ID's to Iterate Through")
-    for DASHID in dash_id_list:
+def read_excel_file_return_list(DASH_ID_List):
+    # df = pd.read_excel('./NonEnergyStarDashClickerSheet.xlsx', header=0, usecols=0, index_col=None, converters={'DASHID':str})
+    # DASH_ID_List = df['DASHID'].tolist()
+    # DASH_ID_List = ["69990"]
+
+    print(DASH_ID_List)
+    print(f"We have " + str(len(DASH_ID_List)) + " DASH ID's to Iterate Through")
+    for DASHID in DASH_ID_List:
         print(f"We are on DASHID " + str(DASHID))
         browser.get(f"http://sem.myirate.com/Jobs/NewConst_Edit_Service.aspx?id=3019&j="+str(DASHID))
         # Open the menu under "Add a Service"
@@ -123,8 +157,9 @@ def beep_when_done():
     winsound.Beep(freq, duration_short)
 
 def main():
+    read_energystar_and_non_energy_star_queue_tabs()
     login_into_dash("./DASHLoginInfo.json")
-    read_excel_file_return_list()
+    read_excel_file_return_list(DASH_ID_List)
     logout_session()
 main()
 browser.quit()
