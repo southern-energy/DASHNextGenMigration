@@ -145,13 +145,13 @@ def read_table(url, DASH_List):
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 
-    # Remove the previous "DASH_Job_Export_Queue_Reader.csv" file.
-    if os.path.exists("DASH_Job_Export_Queue_Reader.csv"):
-        os.remove("DASH_Job_Export_Queue_Reader.csv")
+    # Remove the previous "DASH_File_Queue_Reader.csv" file.
+    if os.path.exists("DASH_File_Queue_Reader.csv"):
+        os.remove("DASH_File_Queue_Reader.csv")
     else:
         print("We do not have to remove the file.")
 
-    dataframe.to_csv("DASH_Job_Export_Queue_Reader.csv", index=False)
+    dataframe.to_csv("DASH_File_Queue_Reader.csv", index=False)
 
 def csv_to_database(json_target_file):
     with open(json_target_file) as login_data:
@@ -170,7 +170,7 @@ def csv_to_database(json_target_file):
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\DASH_Job_Export_Queue_Reader.csv"
+    path= os.getcwd()+"\\DASH_File_Queue_Reader.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
 
