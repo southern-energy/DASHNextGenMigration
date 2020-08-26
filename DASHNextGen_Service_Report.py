@@ -84,15 +84,15 @@ def navigate_to_reports_and_click_excel():
     print("We have clicked the download report button.")
 
 def grab_downloaded_report():
-    print("Sleeping for 5 seconds before we grab the file.")
-    time.sleep(5)
+    print("Sleeping for 10 seconds before we grab the file.")
+    time.sleep(10)
     print("Done Sleeping")
     try:
         df = pd.read_html("report.xls", header=0)[0]
         print("We didn't have to wait to sleep.")
     except:
-        print("Sleeping for an additional 5 seconds.")
-        time.sleep(5)
+        print("Sleeping for an additional 10 seconds.")
+        time.sleep(10)
         df = pd.read_html("report.xls", header=0)[0]
     # print(df)
 
