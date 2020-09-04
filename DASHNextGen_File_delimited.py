@@ -45,7 +45,7 @@ options.add_argument('--disable-gpu')  # applicable to windows os only
 options.add_argument('start-maximized') # 
 options.add_argument('disable-infobars')
 options.add_argument("--disable-extensions")
-browser = webdriver.Chrome(chrome_options=options, executable_path=ChromeDriverManager().install())
+browser = webdriver.Chrome(options=options, executable_path=ChromeDriverManager().install())
 print("Headless Browser has Launched")
 
 def login_into_dash(json_target_file):
@@ -182,6 +182,8 @@ def read_table(url):
 
     dataframe = dataframe[[1,0,2,4,3,5,6,7,8]]
 
+    dataframe[8] = pd.to_datetime(dataframe[8], utc=False)
+
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
     # dataframe.to_csv("Export.csv", encoding="utf-8", index=False)
@@ -191,13 +193,13 @@ def read_table(url):
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 
-    # Remove the previous "DASH_Job_Export.csv" file.
-    if os.path.exists("DASH_Job_Export.csv"):
-        os.remove("DASH_Job_Export.csv")
+    # Remove the previous "DASH_File_Export.csv" file.
+    if os.path.exists("DASH_File_Export.csv"):
+        os.remove("DASH_File_Export.csv")
     else:
         print("We do not have to remove the file.")
 
-    dataframe.to_csv("DASH_Job_Export.csv", index=False)
+    dataframe.to_csv("DASH_File_Export.csv", index=False)
 
 def csv_to_database(json_target_file):
     with open(json_target_file) as login_data:
@@ -216,7 +218,7 @@ def csv_to_database(json_target_file):
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\DASH_Job_Export.csv"
+    path= os.getcwd()+"\\DASH_File_Export.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
 

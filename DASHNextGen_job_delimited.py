@@ -45,7 +45,7 @@ options.add_argument('--disable-gpu')  # applicable to windows os only
 options.add_argument('start-maximized') # 
 options.add_argument('disable-infobars')
 options.add_argument("--disable-extensions")
-browser = webdriver.Chrome(chrome_options=options, executable_path=ChromeDriverManager().install())
+browser = webdriver.Chrome(options=options, executable_path=ChromeDriverManager().install())
 print("Headless Browser has Launched")
 
 def login_into_dash(json_target_file):

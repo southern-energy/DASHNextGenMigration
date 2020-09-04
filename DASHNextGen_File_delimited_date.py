@@ -30,9 +30,9 @@ import os
 """
 This was the original method I was using when developing this script, please run this if you are curious of what is happening under the hood of Selenium or you need to troubleshoot any issues.
 """
-# print("Real Browser Launching")
+# # print("Real Browser Launching")
 # browser = webdriver.Chrome(ChromeDriverManager().install())
-# print("Real Browser has Launched")
+# # print("Real Browser has Launched")
 
 """
 The Headless browsing option greatly reduces the amount of time it takes for the scraper to run.
@@ -72,15 +72,13 @@ def login_into_dash(json_target_file):
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$Password").send_keys(password)
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$btnLogin").click()
 
-#TODO: Add way to connect to Non-Energy Star Sheet and Rob's Energy Star Sheet
-
 def read_table(url):
 
     browser.get(url)
 
     dataframe = pd.DataFrame()
 
-    filter_date_start =  date.today() + datetime.timedelta(days=2)
+    filter_date_start =  date.today() + datetime.timedelta(days=1)
     print(filter_date_start)
 
     filter_date_end =  date.today() + datetime.timedelta(days=-183)
@@ -129,10 +127,12 @@ def read_table(url):
 
         while int(len(dataframe.index)) < items:
             try:
-                WebDriverWait(browser,10).until(EC.visibility_of_element_located((By.ID,'ctl00_ContentPlaceHolder1_rgReport_ctl00__0')))
+                WebDriverWait(browser,5).until(EC.visibility_of_element_located((By.ID,'ctl00_ContentPlaceHolder1_rgReport_ctl00__0')))
             finally:
                 table_list = browser.find_elements_by_class_name('rgClipCells')
                 table_we_want = table_list[1].get_attribute('outerHTML')
+                table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+                table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
                 dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
                 print(len(dataframe))
             try:
@@ -141,38 +141,45 @@ def read_table(url):
                 WebDriverWait(browser,10).until(EC.element_to_be_clickable((By.CLASS_NAME,"rgPageNext"))).click()
         else:
             print("We are done scraping on to the next query.")
-              
-                
-        
+            print(dataframe)
+            print(len(dataframe.index))
 
-    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,13,14,18,15,16,17]]
+    """
+    Here we must reorder the columns so our data can be compatible with older DASH Information
+    
+    The changes we are making:
+        - Remove Project Name Column
+        - Rearranging the columns to align with the database schema.
+    """
 
-    #TODO: Fix this ordering and rearrangin' of stuff
+    # dataframe = dataframe[dataframe.columns.drop("Project Name")]
 
-    # dataframe.rename(columns={0:"RatingID",12:"Checkbox3Value",3:"ServiceDate",5:"TestingComplete",6:"DataEntryComplete",7:"Reschedule", 2:"ServiceName",8:"Reinspection",9:"RescheduledDate",10:"Price",4:"Employee",11:"PONumber",13:"EmployeeTime5",14:"EmployeeTime6",18:"LastUpdated",16:"DateEntered",15:"EmployeeTime7",1:"ServiceID",17:"EnteredBy"})
+    # dataframe.to_csv("Export_Before_Builder_Project.csv", encoding="utf-8", index=False)
 
-    # ["RatingID","JobNumber","Address","City","State","Zip","Builder","Subdivision","GasUtility","ElectricUtility","Lot","Division","HERSIndex","BldgFile","DateEntered"]
+    # dataframe.to_csv("Export_After_Builder_Project_col_Drop.csv", encoding="utf-8", index=False)
 
-    dataframe[17] = dataframe[17].str[-8:]
-    dataframe[18] = pd.to_datetime(dataframe[18], utc=False)
+    # dataframe = dataframe[["Job ID","Job Number","Street Address","City","State","Zip","Client Name","Subdivision Name","Gas Utility","Electric Utility","Lot","Division Name","HERS","Bldg File","Date Entered","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link"]]
+
+    dataframe = dataframe[[1,0,2,4,3,5,6,7,8]]
+
+    dataframe[8] = pd.to_datetime(dataframe[8], utc=False)
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
-    dataframe = dataframe.replace({r',': '.'}, regex=True) # remove all commas
-    dataframe = dataframe.replace({r';': '.'}, regex=True) # remove all commas
+    # dataframe.to_csv("Export.csv", encoding="utf-8", index=False)
+    
+    dataframe = dataframe.replace({',': '.'}, regex=True) # remove all commas
+    dataframe = dataframe.replace({';': '.'}, regex=True) # remove all commas
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 
-    # Remove the previous "DASH_Job_Export_Queue_Reader_Date.csv" file.
-    if os.path.exists("DASH_Job_Export_Queue_Reader_Date.csv"):
-        os.remove("DASH_Job_Export_Queue_Reader_Date.csv")
+    # Remove the previous "DASH_Job_Export_delimited_date.csv" file.
+    if os.path.exists("DASH_Job_Export_delimited_date.csv"):
+        os.remove("DASH_Job_Export_delimited_date.csv")
     else:
         print("We do not have to remove the file.")
 
-    print(dataframe)
-    print(len(dataframe.index)) 
-
-    dataframe.to_csv("DASH_Job_Export_Queue_Reader_Date.csv", index=False)
+    dataframe.to_csv("DASH_Job_Export_delimited_date.csv", index=False)
 
 def csv_to_database(json_target_file):
     with open(json_target_file) as login_data:
@@ -191,11 +198,13 @@ def csv_to_database(json_target_file):
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\DASH_Job_Export_Queue_Reader_Date.csv"
+    path= os.getcwd()+"\\DASH_Job_Export_delimited_date.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
+
+    cursor.execute('truncate TABLE `file`;')
     
-    cursor.execute('LOAD DATA LOCAL INFILE \"'+ path +'\" REPLACE INTO TABLE `job` FIELDS TERMINATED BY \',\' ignore 1 lines;')
+    cursor.execute('LOAD DATA LOCAL INFILE \"'+ path +'\" REPLACE INTO TABLE `file` FIELDS TERMINATED BY \',\' ignore 1 lines;')
     
     # #close the connection to the database.
     mydb.commit()
@@ -213,13 +222,12 @@ def main():
     """
     Please use these to control the previously defined functions.
     """
-    print("DASHNextGen_job_date_BIG.py is Starting")
-    # read_energystar_and_non_energy_star_queue_tabs()
+    print("DASHNextGen_File_delimited_date.py is Starting")
     login_into_dash("./DASHLoginInfo.json")
-    read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1324")
+    read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1327")
     csv_to_database("./DASHLoginInfo.json")
     logout_session()
-    print("DASHNextGen_job_date_BIG.py is Done")
+    print("DASHNextGen_File_delimited_date.py is Done")
 
 main()
 browser.quit()

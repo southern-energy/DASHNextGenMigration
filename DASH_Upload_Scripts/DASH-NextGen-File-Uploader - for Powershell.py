@@ -99,8 +99,12 @@ def navigate_to_downloads_and_upload_file():
     # print(absolute_path_list)
     # print(file_name_list)
     
+    uploaded_list = []
+    already_had_certificate = []
     
     for filename in file_name_list:
+        
+
         ratingID = filename.split("_",1)[0]
         print(f"Current Rating ID Being Printed is: " + str(ratingID))
         browser.get(f"http://sem.myirate.com/Jobs/NewConst_Edit_File.aspx?id=1&j=" + str(ratingID))
@@ -123,6 +127,7 @@ def navigate_to_downloads_and_upload_file():
             
         if (any(item.startswith('HERS Certificate') for item in stringified_file_label_list)) == True:
             print(True)
+            already_had_certificate.append(str(ratingID))
             print("You already have a HERS Certificate Uploaded")
             # We should consider adding function that removes existing script so we can re-upload anyways.
             shutil.move(path + '\\' + filename, 'already_uploaded' + "\\" + filename)
@@ -177,10 +182,17 @@ def navigate_to_downloads_and_upload_file():
                 browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgUploadedFiles$ctl00$ctl05$UpdateButton").click()
                 print(f"File for " + str(ratingID) + " submitted.")
 
+            uploaded_list.append(str(ratingID))
             print(f"We have uploaded and saved DASH: " + str(ratingID))
 
             shutil.move(path + '\\' + filename, newpath + "\\" + filename)
             absolute_path_iterator += 1
+        print("Certificates that uploaded:\n")
+        print(uploaded_list)
+        print("Certificates that were not uploaded:\n")
+        print(already_had_certificate)
+        print(f"We have " + str(len(uploaded_list)) + " that did not get uploaded.")
+        print(f"We have " + str(len(already_had_certificate)) + " that did not get uploaded.")
 
 def beep_when_done():
     #Attributes

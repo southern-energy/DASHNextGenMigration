@@ -15,6 +15,10 @@ import os
 import pandas as pd
 import MySQLdb
 import ctypes
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+
+
 
 profile = webdriver.FirefoxProfile()
 profile.set_preference('browser.download.folderList', 2)
@@ -42,10 +46,19 @@ The window will show up with this one.
 The Headless browsing option greatly reduces the amount of time it takes for the scraper to run.
 """
 
-print("Headless Browser Running")
 options = Options()
 options.add_argument("--headless") # Runs Firefox in headless mode.
-browser = webdriver.Firefox(executable_path=GeckoDriverManager().install(),firefox_profile=profile, options=options)
+binary = r'C:\\Program Files\\Mozilla Firefox\\firefox.exe'
+print(binary)
+cap = DesiredCapabilities().FIREFOX
+cap["marionette"] = True
+executable = os.path.abspath("geckodriver.exe")
+print(executable)
+browser = webdriver.Firefox(capabilities=cap,executable_path=executable,firefox_profile=profile, options=options)
+print("Headless Browser Running")
+
+# browser = webdriver.Firefox(capabilities=cap,executable_path=GeckoDriverManager().install(),firefox_profile=profile, options=options)
+
 
 def login_into_dash(json_target_file):
     """
@@ -84,10 +97,13 @@ def navigate_to_reports_and_click_excel(url):
     time.sleep(5)
     print("Done Sleeping")
 
-    filter_date_start =  date.today() + timedelta(days=2)
+    # Here we have to edit the dates that contain the job.
+
+
+    filter_date_start =  date.today() + timedelta(days=1)
     print(filter_date_start)
     datetime.date
-    filter_date_end =  date.today() + timedelta(days=-183)
+    filter_date_end =  date.today() + timedelta(days=-175)
     print(filter_date_end)
 
     try:
@@ -208,13 +224,13 @@ def main():
     """
     Please use these to control the previously defined functions.
     """
-    print("DASHNextGen_Service_Report.py is Starting")
+    print("DASHNextGen_Service_Report_date_BIG.py is Starting")
     login_into_dash("./DASHLoginInfo.json")
     navigate_to_reports_and_click_excel("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1325")
     time.sleep(5)
     grab_downloaded_report()
     csv_to_database("./DASHLoginInfo.json")
-    # file_cleanup()
+    file_cleanup()
     print("We have uploaded to the database.")
     logout_session()
 
@@ -223,4 +239,4 @@ main()
 
 browser.quit()
 
-print("DASHNextGen_Service_Report.py is Done")
+print("DASHNextGen_Service_Report_date_BIG.py is Done")

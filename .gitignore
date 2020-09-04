@@ -9,3 +9,4 @@ chromedriver.exe
 *.ipynb
 DASH_Non-E-Star-Clicker/*.xlsx
 DASH_Non-E-Star-Clicker/NonEnergyStarDashClickerSheet.xlsx
+*.exe

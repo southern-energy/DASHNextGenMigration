@@ -161,6 +161,8 @@ def read_table(url):
 
     dataframe = dataframe[[1,0,2,4,3,5,6,7,8]]
 
+    dataframe[8] = pd.to_datetime(dataframe[8], utc=False)
+
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
     # dataframe.to_csv("Export.csv", encoding="utf-8", index=False)

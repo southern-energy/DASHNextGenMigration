@@ -34,8 +34,20 @@ options.add_argument('--disable-gpu')  # applicable to windows os only
 options.add_argument('start-maximized') # 
 options.add_argument('disable-infobars')
 options.add_argument("--disable-extensions")
-browser = webdriver.Chrome(chrome_options=options, executable_path=ChromeDriverManager().install())
+browser = webdriver.Chrome(options=options, executable_path=ChromeDriverManager().install())
 print("Browser has Launched Headlessly")
+
+def read_excel_sheet():
+    df = pd.read_excel("./NonEnergyStarDashClickerSheet.xlsx", sheet_name=0,header=0,usecols=0)
+    print(df)
+    df['DASHID'].astype(str)
+    global Local_Excel_DASH_ID_List
+    Local_Excel_DASH_ID_List = df['DASHID'].tolist()
+    print(Local_Excel_DASH_ID_List)
+
+    global DASH_ID_List
+    DASH_ID_List = Local_Excel_DASH_ID_List
+
 
 def read_energystar_and_non_energy_star_queue_tabs():
 
@@ -51,23 +63,22 @@ def read_energystar_and_non_energy_star_queue_tabs():
 
     Non_Energy_Star_Data = worksheet.col_values(1)[1:]
 
-    # print(Non_Energy_Star_Data)
-
-    Energy_Star_Sheet = gc.open_by_key('1vIPJSB35NqJMVbjHq9X5NjmWll60C2wqTncNpK7ic7Y')
-
-    queue_for_print_tool_sheet = Energy_Star_Sheet.worksheet('Queue Copy for Print Tool')
-
-    Energy_Star_DASH_IDs = queue_for_print_tool_sheet.col_values(1)[1:]
-
-    # print(Energy_Star_DASH_IDs)
-
-    combined_list = Non_Energy_Star_Data + Energy_Star_DASH_IDs
-
     print(f"We grabbed " + str(len(Non_Energy_Star_Data)) + " Non Energy Star IDs.")
-    print(f"We grabbed " + str(len(Energy_Star_DASH_IDs)) + " Non Energy Star IDs.")
-    print(f"We have " + str(len(combined_list)) + " total DASH IDs.")
+
+    # print(Non_Energy_Star_Data)
+    # Energy_Star_Sheet = gc.open_by_key('1vIPJSB35NqJMVbjHq9X5NjmWll60C2wqTncNpK7ic7Y')
+    # queue_for_print_tool_sheet = Energy_Star_Sheet.worksheet('Queue Copy for Print Tool')
+    # Energy_Star_DASH_IDs = queue_for_print_tool_sheet.col_values(1)[1:]
+    # print(f"We grabbed " + str(len(Energy_Star_DASH_IDs)) + " Non Energy Star IDs.")
+    # # print(Energy_Star_DASH_IDs)
+    # combined_list = Non_Energy_Star_Data + Energy_Star_DASH_IDs
+    # print(f"We have " + str(len(combined_list)) + " total DASH IDs.")
+    
+    
     global DASH_ID_List
-    DASH_ID_List = combined_list
+    DASH_ID_List = Non_Energy_Star_Data
+
+
 
 def login_into_dash(json_target_file):
     """
@@ -114,7 +125,7 @@ def read_excel_file_return_list(DASH_ID_List):
             if browser.find_element_by_id("ContentPlaceHolder1_rptServices_CustomCheckboxes_0_2_0").is_selected() == False:
                 time.sleep(1)
 
-                print(browser.find_element_by_id("ContentPlaceHolder1_rptServices_CustomCheckboxes_0_2_0").get_attribute("outerHTML"))
+                # print(browser.find_element_by_id("ContentPlaceHolder1_rptServices_CustomCheckboxes_0_2_0").get_attribute("outerHTML"))
 
                 # browser.find_element_by_id("ContentPlaceHolder1_rptServices_CustomCheckboxes_0_2_0").click()
 
@@ -133,9 +144,23 @@ def read_excel_file_return_list(DASH_ID_List):
                 save_button_child = parent_div_save_button.find_element_by_name("ctl00$ContentPlaceHolder1$rptServices$ctl00$btnSave")
                 if save_button_child.get_attribute("value") == "Save Service":
                     save_button_child.click()
-                    print(f"We saved our input for DASH: " + DASHID)
+                    print(f"We saved our input for DASH: " + str(DASHID))
             else:
                 print("Something is broken, or the box is already checked.")
+        # We now have to click the "Import Button"
+        time.sleep(2)
+        browser.get(f"http://sem.myirate.com/Jobs/NewConst_Edit_CloseOut.aspx?id=1016&j="+str(DASHID))
+        print("We are on the Close Out Page")
+        try:
+            WebDriverWait(browser,5).until(EC.element_to_be_clickable((By.ID,"button2"))).click()
+            print("We opened Close Job Box on the first try.")
+            WebDriverWait(browser,5).until(EC.element_to_be_clickable((By.NAME,"ctl00$ContentPlaceHolder1$btnSaveEkotrope"))).click()
+            print("We clicked the Import Data button on the first try.")
+        except:
+            WebDriverWait(browser,10).until(EC.element_to_be_clickable((By.ID,"button2"))).click()
+            print("We opened Close Job Box on the second try.")
+            WebDriverWait(browser,10).until(EC.element_to_be_clickable((By.NAME,"ctl00$ContentPlaceHolder1$btnSaveEkotrope"))).click()
+            print("We clicked the Import Data button on the second try.")
     print("We are done.")
 
 def logout_session():
@@ -158,6 +183,7 @@ def beep_when_done():
 
 def main():
     read_energystar_and_non_energy_star_queue_tabs()
+    # read_excel_sheet()
     login_into_dash("./DASHLoginInfo.json")
     read_excel_file_return_list(DASH_ID_List)
     logout_session()

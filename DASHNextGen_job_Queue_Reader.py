@@ -46,7 +46,7 @@ options.add_argument('--disable-gpu')  # applicable to windows os only
 options.add_argument('start-maximized') # 
 options.add_argument('disable-infobars')
 options.add_argument("--disable-extensions")
-browser = webdriver.Chrome(chrome_options=options, executable_path=ChromeDriverManager().install())
+browser = webdriver.Chrome(options=options, executable_path=ChromeDriverManager().install())
 print("Headless Browser has Launched")
 
 def login_into_dash(json_target_file):
@@ -102,7 +102,7 @@ def read_energystar_and_non_energy_star_queue_tabs():
     combined_list = Non_Energy_Star_Data + Energy_Star_DASH_IDs
 
     print(f"We grabbed " + str(len(Non_Energy_Star_Data)) + " Non Energy Star IDs.")
-    print(f"We grabbed " + str(len(Energy_Star_DASH_IDs)) + " Non Energy Star IDs.")
+    print(f"We grabbed " + str(len(Energy_Star_DASH_IDs)) + " Energy Star IDs.")
     print(f"We have " + str(len(combined_list)) + " total DASH IDs.")
     global DASH_ID_List
     DASH_ID_List = combined_list
@@ -125,7 +125,7 @@ def read_table(url, DASH_List):
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl04").send_keys(str(DASH_ID))
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ApplyButton").click()
             try:
-                WebDriverWait(browser,1).until(EC.visibility_of_element_located((By.ID,'ctl00_ContentPlaceHolder1_rgReport_ctl00__0')))
+                WebDriverWait(browser,5).until(EC.visibility_of_element_located((By.ID,'ctl00_ContentPlaceHolder1_rgReport_ctl00__0')))
             finally:
                 table_list = browser.find_elements_by_class_name('rgClipCells')
                 table_we_want = table_list[1].get_attribute('outerHTML')
@@ -197,13 +197,13 @@ def main():
     """
     Please use these to control the previously defined functions.
     """
-    print("DASHNextGen_job_individual.py is Starting")
+    print("DASHNextGen_job_Queue_Reader.py is Starting")
     read_energystar_and_non_energy_star_queue_tabs()
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1322", DASH_ID_List)
     csv_to_database("./DASHLoginInfo.json")
     logout_session()
-    print("DASHNextGen_job_individual.py is Done")
+    print("DASHNextGen_job_Queue_Reader.py is Done")
 
 main()
 import beeper_module
