@@ -151,32 +151,35 @@ def read_table(url, DASH_List):
 
     # dataframe = dataframe[["Job ID","Job Number","Street Address","City","State","Zip","Client Name","Subdivision Name","Gas Utility","Electric Utility","Lot","Division Name","HERS","Bldg File","Date Entered","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link"]]
 
-    dataframe = dataframe[[1,0,2,4,3,5,6,7,8]]
-
-    dataframe[8] = pd.to_datetime(dataframe[8], utc=False)
-
-    # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
-
-    # dataframe.to_csv("Export.csv", encoding="utf-8", index=False)
-    
-    dataframe = dataframe.replace({',': '.'}, regex=True) # remove all commas
-    dataframe = dataframe.replace({';': '.'}, regex=True) # remove all commas
-    dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
-    dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
-
-    # Remove the previous "DASH_File_Queue_Reader.csv" file.
-    if os.path.exists("DASH_File_Queue_Reader.csv"):
-        os.remove("DASH_File_Queue_Reader.csv")
-    else:
-        print("We do not have to remove the file.")
-
-    dataframe.to_csv("DASH_File_Queue_Reader.csv", index=False)
-    
     print(f"We have " + str(len(ready_to_print)) + " ready to print!")
     print(f"We have " + str(len(already_has_certificate_uploaded)) + " with certificates!")
-    if len(already_has_certificate_uploaded) > 0:
-        print(f"Please look to the following DASH IDs: \n")
+
+    if int(len(ready_to_print)) > 0 and int(len(already_has_certificate_uploaded)) == 0:
+        print(f"All " + str(len(ready_to_print)) + " DASH IDs are ready to print and we have no DASH IDs with Certificates!")
+    else:
+        print(f"Please look to the following DASH IDs that have certificates: \n")
         print(already_has_certificate_uploaded)
+
+        dataframe = dataframe[[1,0,2,4,3,5,6,7,8]]
+        dataframe[8] = pd.to_datetime(dataframe[8], utc=False)
+        
+        # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
+
+        # dataframe.to_csv("Export.csv", encoding="utf-8", index=False)
+        
+        dataframe = dataframe.replace({',': '.'}, regex=True) # remove all commas
+        dataframe = dataframe.replace({';': '.'}, regex=True) # remove all commas
+        dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
+        dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
+
+        # Remove the previous "DASH_File_Queue_Reader.csv" file.
+        if os.path.exists("DASH_File_Queue_Reader.csv"):
+            os.remove("DASH_File_Queue_Reader.csv")
+        else:
+            print("We do not have to remove the file.")
+
+        dataframe.to_csv("DASH_File_Queue_Reader.csv", index=False)
+    
 
 def csv_to_database(json_target_file):
     with open(json_target_file) as login_data:
