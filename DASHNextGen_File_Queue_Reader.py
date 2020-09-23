@@ -156,6 +156,15 @@ def read_table(url, DASH_List):
 
     if int(len(ready_to_print)) > 0 and int(len(already_has_certificate_uploaded)) == 0:
         print(f"All " + str(len(ready_to_print)) + " DASH IDs are ready to print and we have no DASH IDs with Certificates!")
+        # Remove the previous "DASH_File_Queue_Reader.csv" file.
+        if os.path.exists("DASH_File_Queue_Reader.csv"):
+            os.remove("DASH_File_Queue_Reader.csv")
+            print("We removed the pre-existing file.")
+        else:
+            print("We do not have to remove the file.")
+        # Creating an empty CSV to upload to the database.
+        empty_df = pd.DataFrame(list())
+        empty_df.to_csv("DASH_File_Queue_Reader.csv")
     else:
         print(f"Please look to the following DASH IDs that have certificates: \n")
         print(already_has_certificate_uploaded)
