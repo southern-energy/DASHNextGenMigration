@@ -141,6 +141,7 @@ def read_table(url, DASH_List):
     # ["RatingID","JobNumber","Address","City","State","Zip","Builder","Subdivision","GasUtility","ElectricUtility","Lot","Division","HERSIndex","BldgFile","DateEntered"]
 
     dataframe[17] = dataframe[17].str[-8:]
+    dataframe[4] = pd.to_numeric(dataframe[4], downcast='integer',errors='ignore')
     dataframe[18] = pd.to_datetime(dataframe[18], utc=False)
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
@@ -157,6 +158,21 @@ def read_table(url, DASH_List):
         print("We do not have to remove the file.")
 
     dataframe.to_csv("DASH_Job_Export_Queue_Reader.csv", index=False)
+
+def defloat():
+    with open('DASH_Job_Export_Queue_Reader.csv', newline='') as f, open('DASH_Job_Export_Queue_Reader_defloated.csv', "w", newline='') as outFile:
+        reader = csv.reader(f)
+        writer = csv.writer(outFile)
+        for row in reader:
+            if row[10].endswith(".0") == True: # This statement converts the floats in the csv to regular values.
+                row[10] = row[10][:-2]
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17]])
+            elif row[10] == "":
+                row[10] = ''
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17]])
+            else:
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17]])
+                continue
 
 def csv_to_database(json_target_file):
     with open(json_target_file) as login_data:
@@ -175,7 +191,7 @@ def csv_to_database(json_target_file):
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\DASH_Job_Export_Queue_Reader.csv"
+    path= os.getcwd()+"\\DASH_Job_Export_Queue_Reader_defloated.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
     
@@ -201,6 +217,7 @@ def main():
     read_energystar_and_non_energy_star_queue_tabs()
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1322", DASH_ID_List)
+    defloat()
     csv_to_database("./DASHLoginInfo.json")
     logout_session()
     print("DASHNextGen_job_Queue_Reader.py is Done")

@@ -174,7 +174,7 @@ def read_table(url):
     # dataframe = dataframe.rename(columns={1:"ServiceID",0:"RatingID",2:"ServiceName",3:"ServiceDate",4:"Employee",11:"PONumber",10:"Price",5:"TestingComplete",6:"DataEntryComplete",7:"Reschedule",8:"Reinspection",9:"RescheduledDate",16:"DateEntered",17:"EnteredBy",18:"LastUpdated",19:"LastUpdatedBy",12:"Checkbox3Value",13:"EmployeeTime5",14:"EmployeeTime6",15:"EmployeeTime7"})
 
     dataframe[17] = dataframe[17].str[-8:]
-
+    dataframe[4] = pd.to_numeric(dataframe[4], downcast='integer',errors='ignore')
     dataframe[18] = pd.to_datetime(dataframe[18], utc=False)
 
     dataframe = dataframe.replace({r',': '.'}, regex=True) # remove all commas
@@ -189,6 +189,21 @@ def read_table(url):
         print("We do not have to remove the file.")
 
     dataframe.to_csv("DASH_Job_Export.csv", index=False)
+
+def defloat():
+    with open('DASH_Job_Export.csv', newline='') as f, open('DASH_Job_Export_defloated.csv', "w", newline='') as outFile:
+        reader = csv.reader(f)
+        writer = csv.writer(outFile)
+        for row in reader:
+            if row[10].endswith(".0") == True: # This statement converts the floats in the csv to regular values.
+                row[10] = row[10][:-2]
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17]])
+            elif row[10] == "":
+                row[10] = ''
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17]])
+            else:
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17]])
+                continue
 
 def csv_to_database(json_target_file):
     with open(json_target_file) as login_data:
@@ -207,7 +222,7 @@ def csv_to_database(json_target_file):
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\DASH_Job_Export.csv"
+    path= os.getcwd()+"\\DASH_Job_Export_defloated.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
     
@@ -232,6 +247,7 @@ def main():
     print("DASHNextGen_job_delimited.py is Starting")
     login_into_dash("./DASHLoginInfo.json")
     read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1307")
+    defloat()
     csv_to_database("./DASHLoginInfo.json")
     logout_session()
     print("DASHNextGen_job_delimited.py is Done")
