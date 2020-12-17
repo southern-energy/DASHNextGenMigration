@@ -99,7 +99,6 @@ def navigate_to_downloads_and_upload_file():
     # print(absolute_path_list)
     # print(file_name_list)
     
-    
     uploaded_list = []
     already_had_certificate = []
     
@@ -138,7 +137,7 @@ def navigate_to_downloads_and_upload_file():
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_FileType1_Input").click
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_FileType1_Input").send_keys(Keys.CONTROL, "a")
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_FileType1_Input").send_keys(Keys.BACKSPACE)
-            browser.find_element_by_id("ctl00_ContentPlaceHolder1_FileType1_Input").send_keys("HERS Certificate - ", Keys.ARROW_DOWN,Keys.ENTER)
+            browser.find_element_by_id("ctl00_ContentPlaceHolder1_FileType1_Input").send_keys("HERS Certificate - Ekotrope",Keys.ENTER)
             print(str(absolute_path_list[absolute_path_iterator]))
             browser.find_element_by_css_selector("#File1file0").send_keys(str(absolute_path_list[absolute_path_iterator]))
             print("Sleeping for 5 seconds")
