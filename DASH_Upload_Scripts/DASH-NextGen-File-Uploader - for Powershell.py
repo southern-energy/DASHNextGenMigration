@@ -99,11 +99,11 @@ def navigate_to_downloads_and_upload_file():
     # print(absolute_path_list)
     # print(file_name_list)
     
+    
     uploaded_list = []
     already_had_certificate = []
     
     for filename in file_name_list:
-        
 
         ratingID = filename.split("_",1)[0]
         print(f"Current Rating ID Being Printed is: " + str(ratingID))
@@ -138,7 +138,7 @@ def navigate_to_downloads_and_upload_file():
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_FileType1_Input").click
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_FileType1_Input").send_keys(Keys.CONTROL, "a")
             browser.find_element_by_id("ctl00_ContentPlaceHolder1_FileType1_Input").send_keys(Keys.BACKSPACE)
-            browser.find_element_by_id("ctl00_ContentPlaceHolder1_FileType1_Input").send_keys("HERS Certificate - Ekotrope",Keys.ENTER)
+            browser.find_element_by_id("ctl00_ContentPlaceHolder1_FileType1_Input").send_keys("HERS Certificate - ", Keys.ARROW_DOWN,Keys.ENTER)
             print(str(absolute_path_list[absolute_path_iterator]))
             browser.find_element_by_css_selector("#File1file0").send_keys(str(absolute_path_list[absolute_path_iterator]))
             print("Sleeping for 5 seconds")
@@ -187,11 +187,9 @@ def navigate_to_downloads_and_upload_file():
 
             shutil.move(path + '\\' + filename, newpath + "\\" + filename)
             absolute_path_iterator += 1
-        print("Certificates that uploaded:\n")
-        print(uploaded_list)
-        print("Certificates that were not uploaded:\n")
-        print(already_had_certificate)
-        print(f"We have " + str(len(uploaded_list)) + " that did not get uploaded.")
+        print(f"Certificates that uploaded: " + str(uploaded_list))
+        print("Certificates that were not uploaded: " + str(already_had_certificate))
+        print(f"We have " + str(len(uploaded_list)) + " that was uploaded.")
         print(f"We have " + str(len(already_had_certificate)) + " that did not get uploaded.")
 
 def beep_when_done():
