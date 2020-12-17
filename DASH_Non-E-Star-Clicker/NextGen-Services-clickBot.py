@@ -112,18 +112,18 @@ def read_excel_file_return_list(DASH_ID_List):
     print(DASH_ID_List)
     print(f"We have " + str(len(DASH_ID_List)) + " DASH ID's to Iterate Through")
     for DASHID in DASH_ID_List:
-        print(f"We are on DASHID " + str(DASHID))
+        print(f"We are on DASHID " + str(DASHID) + " item " + str(DASH_ID_List.index(DASHID)) + " of " + str(len(DASH_ID_List)) + ".")
         browser.get(f"http://sem.myirate.com/Jobs/NewConst_Edit_Service.aspx?id=3019&j="+str(DASHID))
         # Open the menu under "Add a Service"
-        time.sleep(2)
+        # time.sleep(2)
         browser.find_elements_by_class_name("inspButton")[1].click()
         # We wait for the menu to open.
         try:
             "We are trying to find the element."
-            WebDriverWait(browser,5).until(EC.presence_of_element_located((By.ID, "ContentPlaceHolder1_rptServices_CustomCheckboxes_0_2_0")))
+            WebDriverWait(browser,3).until(EC.presence_of_element_located((By.ID, "ContentPlaceHolder1_rptServices_CustomCheckboxes_0_2_0")))
         finally:
             if browser.find_element_by_id("ContentPlaceHolder1_rptServices_CustomCheckboxes_0_2_0").is_selected() == False:
-                time.sleep(1)
+                # time.sleep(1)
 
                 # print(browser.find_element_by_id("ContentPlaceHolder1_rptServices_CustomCheckboxes_0_2_0").get_attribute("outerHTML"))
 
@@ -148,7 +148,7 @@ def read_excel_file_return_list(DASH_ID_List):
             else:
                 print("Something is broken, or the box is already checked.")
         # We now have to click the "Import Button"
-        time.sleep(2)
+        # time.sleep(2)
         browser.get(f"http://sem.myirate.com/Jobs/NewConst_Edit_CloseOut.aspx?id=1016&j="+str(DASHID))
         print("We are on the Close Out Page")
         try:
