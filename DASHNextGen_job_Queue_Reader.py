@@ -132,7 +132,7 @@ def read_table(url, DASH_List):
                 dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
         
 
-    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,13,14,18,15,16,17]]
+    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,14,15,19,16,17,18,13]]
 
     #TODO: Label these columns.
 
@@ -140,9 +140,9 @@ def read_table(url, DASH_List):
 
     # ["RatingID","JobNumber","Address","City","State","Zip","Builder","Subdivision","GasUtility","ElectricUtility","Lot","Division","HERSIndex","BldgFile","DateEntered"]
 
-    dataframe[17] = dataframe[17].str[-8:]
+    dataframe[18] = dataframe[18].str[-8:]
     dataframe[4] = pd.to_numeric(dataframe[4], downcast='integer',errors='ignore')
-    dataframe[18] = pd.to_datetime(dataframe[18], utc=False)
+    dataframe[19] = pd.to_datetime(dataframe[19], utc=False)
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
