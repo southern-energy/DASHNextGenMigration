@@ -83,7 +83,7 @@ def read_table(url):
     filter_date_start =  date.today() + datetime.timedelta(days=2)
     print(filter_date_start)
 
-    filter_date_end =  date.today() + datetime.timedelta(days=-183)
+    filter_date_end =  date.today() + datetime.timedelta(days=-180)
     print(filter_date_end)
 
     try:
@@ -145,7 +145,8 @@ def read_table(url):
                 
         
 
-    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,13,14,18,15,16,17]]
+    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,14,15,19,16,17,18,13,1]]
+
 
     #TODO: Fix this ordering and rearrangin' of stuff
 
@@ -153,9 +154,9 @@ def read_table(url):
 
     # ["RatingID","JobNumber","Address","City","State","Zip","Builder","Subdivision","GasUtility","ElectricUtility","Lot","Division","HERSIndex","BldgFile","DateEntered"]
 
-    dataframe[17] = dataframe[17].str[-8:]
+    dataframe[18] = dataframe[18].str[-8:]
     dataframe[4] = pd.to_numeric(dataframe[4], downcast='integer',errors='ignore')
-    dataframe[18] = pd.to_datetime(dataframe[18], utc=False)
+    dataframe[19] = pd.to_datetime(dataframe[19], utc=False)
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
@@ -164,30 +165,30 @@ def read_table(url):
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 
-    # Remove the previous "DASH_Job_Export_Queue_Reader_Date.csv" file.
-    if os.path.exists("DASH_Job_Export_Queue_Reader_Date.csv"):
-        os.remove("DASH_Job_Export_Queue_Reader_Date.csv")
+    # Remove the previous "DASH_Job_Export_Queue_Reader_Date_v2.csv" file.
+    if os.path.exists("DASH_Job_Export_Queue_Reader_Date_v2.csv"):
+        os.remove("DASH_Job_Export_Queue_Reader_Date_v2.csv")
     else:
         print("We do not have to remove the file.")
 
     print(dataframe)
     print(len(dataframe.index)) 
 
-    dataframe.to_csv("DASH_Job_Export_Queue_Reader_Date.csv", index=False)
+    dataframe.to_csv("DASH_Job_Export_Queue_Reader_Date_v2.csv", index=False)
 
 def defloat():
-    with open('DASH_Job_Export_Queue_Reader_Date.csv', newline='') as f, open('DASH_Job_Export_Queue_Reader_Date_defloated.csv', "w", newline='') as outFile:
+    with open('DASH_Job_Export_Queue_Reader_Date_v2.csv', newline='') as f, open('DASH_Job_Export_Queue_Reader_Date_defloated_v2.csv', "w", newline='') as outFile:
         reader = csv.reader(f)
         writer = csv.writer(outFile)
         for row in reader:
             if row[10].endswith(".0") == True: # This statement converts the floats in the csv to regular values.
                 row[10] = row[10][:-2]
-                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17]])
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18]])
             elif row[10] == "":
                 row[10] = ''
-                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17]])
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18]])
             else:
-                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17]])
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18]])
                 continue
 
 def csv_to_database(json_target_file):
@@ -207,7 +208,7 @@ def csv_to_database(json_target_file):
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\DASH_Job_Export_Queue_Reader_Date_defloated.csv"
+    path= os.getcwd()+"\\DASH_Job_Export_Queue_Reader_Date_defloated_v2.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
     
@@ -229,14 +230,14 @@ def main():
     """
     Please use these to control the previously defined functions.
     """
-    print("DASHNextGen_job_date_BIG.py is Starting")
+    print("DASHNextGen_job_date_BIG_v2.py is Starting")
     # read_energystar_and_non_energy_star_queue_tabs()
     login_into_dash("./DASHLoginInfo.json")
-    read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1324")
+    read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1353")
     defloat()
     csv_to_database("./DASHLoginInfo.json")
     logout_session()
-    print("DASHNextGen_job_date_BIG.py is Done")
+    print("DASHNextGen_job_date_BIG_v2.py is Done")
 
 main()
 browser.quit()

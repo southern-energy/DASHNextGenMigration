@@ -73,76 +73,96 @@ def login_into_dash(json_target_file):
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$btnLogin").click()
 
 def read_table(url):
-
     browser.get(url)
+
+    #  Start of Grabbing Iterator Information
+
+    items_and_pages_element = browser.find_element_by_class_name("rgInfoPart").text
+    digits_list = []
+    pattern = r'[\d]+[.,\d]+|[\d]*[.][\d]+|[\d]+'
+    if re.search(pattern, items_and_pages_element) is not None:
+        for catch in re.finditer(pattern, items_and_pages_element):
+            # print(catch[0])
+            digits_list.append(catch[0])
+    else:
+        print("Something is broken.")
+
+    # print(digits_list)
+
+    items = int(digits_list[0])
+    pages = int(digits_list[1])
+    print("Number of items: " + str(items))
+    print("Number of pages: " + str(pages))
+
+    # End of Grabbing Iterator Information
+
+    # This block controls table scraping.
+
+    table_list = browser.find_elements_by_class_name('rgClipCells')
+
+ 
+    
+    # We have to grab table headings from the report.
+    # table_headers_table = table_list[0]
+    # print(table_headers_table)
+
+    # table_headers_table_table_row_element = browser.find_element_by_xpath("/html/body/form/div[4]/div[3]/div[6]/div[6]/div[1]/div/table/thead/tr[1]").get_attribute('outerHTML')
+
+    table_we_want = table_list[1].get_attribute('outerHTML')
+
+    table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+    table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
+
+    """Please remember to change the columns for each report"""
+
+    # dataframe = pd.DataFrame(columns=["Job ID","Project Name","Client Name","Street Address","Lot","City","State","Zip","Subdivision Name","Gas Utility","Electric Utility","Division Name","Job Number","HERS","Bldg File","Ekotrope Status","Ekotrope Project Name","Ekotrope Project Link","Date Entered"])
 
     dataframe = pd.DataFrame()
 
-    filter_date_start =  date.today() + datetime.timedelta(days=0)
-    print(filter_date_start)
+    dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
+    print(len(dataframe.index))
+    # print(dataframe)
+    # print(len(dataframe.index))
 
-    filter_date_end =  date.today() + datetime.timedelta(days=-183)
-    print(filter_date_end)
+    # while int(len(dataframe.index)) < items:
+    #     browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
+    #     # browser.find_element_by_name("ctl00$ContentPlaceHolder1$rgReport$ctl00$ctl03$ctl01$ctl11").click()
+    #     time.sleep(10)
+    #     table_list = browser.find_elements_by_class_name('rgClipCells')
+    #     table_we_want = table_list[1].get_attribute('outerHTML')
+    #     # print(table_we_want)
+    #     table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+    #     table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
+    #     dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
+    #     print(len(dataframe.index))
+    #     time.sleep(2)
+    # else:
+    #     print("We are done scraping.")
+    #     print(dataframe)
+    #     print(len(dataframe.index))
 
-    try:
-        WebDriverWait(browser,5).until(EC.element_to_be_clickable((By.ID,"ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl04_dateInput")))
-    finally:
-        browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl05_dateInput").click()
-        browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl04_dateInput").send_keys(Keys.CONTROL, "a")
-        browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl04_dateInput").send_keys(Keys.BACKSPACE)
-        browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl04_dateInput").send_keys(str(filter_date_end))
-        browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl05_dateInput").click()
-        browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl05_dateInput").send_keys(Keys.CONTROL, "a")
-        browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl05_dateInput").send_keys(Keys.BACKSPACE)
-        browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl05_dateInput").send_keys(str(filter_date_start))
-        try:
-            browser.find_element_by_id("ctl00_ContentPlaceHolder1_rfReport_ApplyButton").click()
-            print("We did not have to wait to click the apply button")
-        except:
-            WebDriverWait(browser,5).until(EC.element_to_be_clickable((By.ID,"ctl00_ContentPlaceHolder1_rfReport_ApplyButton"))).click()
-            print("We had to wait to click the apply button.")
-        try:
-            WebDriverWait(browser,1).until(EC.visibility_of_element_located((By.ID,'ctl00_ContentPlaceHolder1_rgReport_ctl00__0')))
-        finally:
-            print("We have applied the date filter, we are now grabbing data.")
+    page_counter = 0
+    page_limiter = 5
 
-        # Here we define the number of pages we have to scrape through.
-        
-        items_and_pages_element = browser.find_element_by_class_name("rgInfoPart").text
-        digits_list = []
-        pattern = r'[\d]+[.,\d]+|[\d]*[.][\d]+|[\d]+'
-        if re.search(pattern, items_and_pages_element) is not None:
-            for catch in re.finditer(pattern, items_and_pages_element):
-                # print(catch[0])
-                digits_list.append(catch[0])
-        else:
-            print("Something is broken.")
+    while page_counter < page_limiter:
+        browser.find_element_by_css_selector("button.t-button.rgActionButton.rgPageNext").click()
+        table_list = browser.find_elements_by_class_name('rgClipCells')
+        table_we_want = table_list[1].get_attribute('outerHTML')
 
-        # print(digits_list)
+        # We need to apply the regext statements from earlier to each loop as well.
 
-        items = int(digits_list[0])
-        pages = int(digits_list[1])
-        print("Number of items: " + str(items))
-        print("Number of pages: " + str(pages))
+        table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
+        table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
 
-        while int(len(dataframe.index)) < items:
-            try:
-                WebDriverWait(browser,5).until(EC.visibility_of_element_located((By.ID,'ctl00_ContentPlaceHolder1_rgReport_ctl00__0')))
-            finally:
-                table_list = browser.find_elements_by_class_name('rgClipCells')
-                table_we_want = table_list[1].get_attribute('outerHTML')
-                table_we_want = re.sub(r'<span.{164} disabled="disabled"><\/span>', 'False', table_we_want)
-                table_we_want = re.sub(r'<span.{182} disabled="disabled"><\/span>', 'True', table_we_want)
-                dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
-                print(len(dataframe))
-            try:
-                WebDriverWait(browser,5).until(EC.element_to_be_clickable((By.CLASS_NAME,"rgPageNext"))).click()
-            except:
-                WebDriverWait(browser,10).until(EC.element_to_be_clickable((By.CLASS_NAME,"rgPageNext"))).click()
-        else:
-            print("We are done scraping on to the next query.")
-            print(dataframe)
-            print(len(dataframe.index))
+        # print(table_we_want)
+        dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
+        print(len(dataframe.index))
+        time.sleep(5)
+        page_counter += 1
+    else:
+        print("We are done scraping.")
+        print(dataframe)
+        print(len(dataframe.index))
 
     """
     Here we must reorder the columns so our data can be compatible with older DASH Information
@@ -173,13 +193,13 @@ def read_table(url):
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 
-    # Remove the previous "DASH_Job_Export_delimited_date.csv" file.
-    if os.path.exists("DASH_Job_Export_delimited_date.csv"):
-        os.remove("DASH_Job_Export_delimited_date.csv")
+    # Remove the previous "DASH_File_Export.csv" file.
+    if os.path.exists("DASH_File_Export.csv"):
+        os.remove("DASH_File_Export.csv")
     else:
         print("We do not have to remove the file.")
 
-    dataframe.to_csv("DASH_Job_Export_delimited_date.csv", index=False)
+    dataframe.to_csv("DASH_File_Export.csv", index=False)
 
 def csv_to_database(json_target_file):
     with open(json_target_file) as login_data:
@@ -198,11 +218,11 @@ def csv_to_database(json_target_file):
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\DASH_Job_Export_delimited_date.csv"
+    path= os.getcwd()+"\\DASH_File_Export.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
 
-    # cursor.execute('truncate TABLE `file`;')
+    cursor.execute('truncate TABLE `file`;')
     
     cursor.execute('LOAD DATA LOCAL INFILE \"'+ path +'\" REPLACE INTO TABLE `file` FIELDS TERMINATED BY \',\' ignore 1 lines;')
     
@@ -222,12 +242,12 @@ def main():
     """
     Please use these to control the previously defined functions.
     """
-    print("DASHNextGen_File_delimited_date.py is Starting")
+    print("DASHNextGen_File_delimited.py is Starting")
     login_into_dash("./DASHLoginInfo.json")
-    read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1327")
+    read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1311")
     csv_to_database("./DASHLoginInfo.json")
     logout_session()
-    print("DASHNextGen_File_delimited_date.py is Done")
+    print("DASHNextGen_File_delimited.py is Done")
 
 main()
 browser.quit()

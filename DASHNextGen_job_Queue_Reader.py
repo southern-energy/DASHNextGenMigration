@@ -132,7 +132,7 @@ def read_table(url, DASH_List):
                 dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
         
 
-    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,14,15,19,16,17,18,13]]
+    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,14,15,19,16,17,18,13,1]]
 
     #TODO: Label these columns.
 
@@ -166,12 +166,12 @@ def defloat():
         for row in reader:
             if row[10].endswith(".0") == True: # This statement converts the floats in the csv to regular values.
                 row[10] = row[10][:-2]
-                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17]])
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18]])
             elif row[10] == "":
                 row[10] = ''
-                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17]])
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18]])
             else:
-                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17]])
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18]])
                 continue
 
 def csv_to_database(json_target_file):

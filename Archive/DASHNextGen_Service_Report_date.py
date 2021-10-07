@@ -127,7 +127,7 @@ def grab_downloaded_report():
         df = pd.read_html("report.xls", header=0)[0]
     # print(df)
 
-    df = df[['ServiceID','JobID','ServiceName','ServiceDate','Employee1', 'PONumber', 'Price','TestingComplete','DataEntryComplete','Reschedule','Reinspection','RescheduledDate','DateEntered','EnteredBy', 'LastUpdated','LastUpdatedBy','Checkbox3Value','Employee1Time5','Employee1Time6','Employee1Time7','RequiredTime','ProjectName']]
+    df = df[['ServiceID','JobID','ServiceName','ServiceDate','Employee1', 'PONumber', 'Price','TestingComplete','DataEntryComplete','Reschedule','Reinspection','RescheduledDate','DateEntered','EnteredBy', 'LastUpdated','LastUpdatedBy','Checkbox3Value','Employee1Time5','Employee1Time6','Employee1Time7']]
 
     df.rename(columns={"JobID":"RatingID", "Employee1": "Employee", 'Employee1Time5':"EmployeeTime5",'Employee1Time6':"EmployeeTime6",'Employee1Time7':"EmployeeTime7", "Checkbox3Value":"readyToPrint"})
 
@@ -210,7 +210,7 @@ def main():
     """
     print("DASHNextGen_Service_Report.py is Starting")
     login_into_dash("./DASHLoginInfo.json")
-    navigate_to_reports_and_click_excel("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1352")
+    navigate_to_reports_and_click_excel("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1325")
     time.sleep(5)
     grab_downloaded_report()
     csv_to_database("./DASHLoginInfo.json")

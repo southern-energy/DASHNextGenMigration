@@ -100,10 +100,10 @@ def navigate_to_reports_and_click_excel(url):
     # Here we have to edit the dates that contain the job.
 
 
-    filter_date_start =  date.today() + timedelta(days=1)
+    filter_date_start =  date.today() + timedelta(days=-1)
     print(filter_date_start)
     datetime.date
-    filter_date_end =  date.today() + timedelta(days=-175)
+    filter_date_end =  date.today() + timedelta(days=-180)
     print(filter_date_end)
 
     try:
@@ -143,7 +143,7 @@ def grab_downloaded_report():
         df = pd.read_html("report.xls", header=0)[0]
     # print(df)
 
-    df = df[['ServiceID','JobID','ServiceName','ServiceDate','Employee1', 'PONumber', 'Price','TestingComplete','DataEntryComplete','Reschedule','Reinspection','RescheduledDate','DateEntered','EnteredBy', 'LastUpdated','LastUpdatedBy','Checkbox3Value','Employee1Time5','Employee1Time6','Employee1Time7']]
+    df = df[['ServiceID','JobID','ServiceName','ServiceDate','Employee1', 'PONumber', 'Price','TestingComplete','DataEntryComplete','Reschedule','Reinspection','RescheduledDate','DateEntered','EnteredBy', 'LastUpdated','LastUpdatedBy','Checkbox3Value','Employee1Time5','Employee1Time6','Employee1Time7','RequiredTime','ProjectName']]
 
     df.rename(columns={"JobID":"RatingID", "Employee1": "Employee", 'Employee1Time5':"EmployeeTime5",'Employee1Time6':"EmployeeTime6",'Employee1Time7':"EmployeeTime7", "Checkbox3Value":"readyToPrint"})
 
@@ -152,7 +152,7 @@ def grab_downloaded_report():
     # df['LastUpdated'].astype('datetime64[ns]')
     # df['DateEntered'].astype('datetime64[ns]')
     df['ServiceDate'] = pd.to_datetime(df['ServiceDate'], utc=False)
-    df['RescheduleDate'] = pd.to_datetime(df['RescheduledDate'], utc=False)
+    df['RescheduledDate'] = pd.to_datetime(df['RescheduledDate'], utc=False)
     df['DateEntered'] = pd.to_datetime(df['DateEntered'], utc=False)
     df['LastUpdated'] = pd.to_datetime(df['LastUpdated'], utc=False)
 
@@ -170,13 +170,13 @@ def grab_downloaded_report():
 
     # df = df[:601] # This is used to limit how many rows we pull from the sheet.
 
-    # Remove the previous "DASH_Service_Report_Export.csv" file.
-    if os.path.exists("DASH_Service_Report_Export.csv"):
-        os.remove("DASH_Service_Report_Export.csv")
+    # Remove the previous "DASH_Service_Report_Export_v2.csv" file.
+    if os.path.exists("DASH_Service_Report_Export_v2.csv"):
+        os.remove("DASH_Service_Report_Export_v2.csv")
     else:
         print("We do not have to remove the file.")
 
-    df.to_csv("DASH_Service_Report_Export.csv", index=False)
+    df.to_csv("DASH_Service_Report_Export_v2.csv", index=False)
 
 def csv_to_database(json_target_file):
     with open(json_target_file) as login_data:
@@ -195,7 +195,7 @@ def csv_to_database(json_target_file):
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\DASH_Service_Report_Export.csv"
+    path= os.getcwd()+"\\DASH_Service_Report_Export_v2.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
     
@@ -206,7 +206,7 @@ def csv_to_database(json_target_file):
     cursor.close()
 
 def file_cleanup():
-    # Remove the previous "DASH_Service_Report_Export.csv" file.
+    # Remove the previous "DASH_Service_Report_Export_v2.csv" file.
     if os.path.exists("report.xls"):
         os.remove("report.xls")
     else:
@@ -226,11 +226,11 @@ def main():
     """
     print("DASHNextGen_Service_Report_date_BIG.py is Starting")
     login_into_dash("./DASHLoginInfo.json")
-    navigate_to_reports_and_click_excel("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1325")
+    navigate_to_reports_and_click_excel("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1305")
     time.sleep(5)
     grab_downloaded_report()
     csv_to_database("./DASHLoginInfo.json")
-    file_cleanup()
+    # file_cleanup()
     print("We have uploaded to the database.")
     logout_session()
 
