@@ -145,18 +145,17 @@ def read_table(url):
                 
         
 
-    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,14,15,19,16,17,18,13,1]]
+    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,16,17,21,18,19,20,13,1,15,14]]
 
-
-    #TODO: Fix this ordering and rearrangin' of stuff
+    #TODO: Label these columns.
 
     # dataframe.rename(columns={0:"RatingID",12:"Checkbox3Value",3:"ServiceDate",5:"TestingComplete",6:"DataEntryComplete",7:"Reschedule", 2:"ServiceName",8:"Reinspection",9:"RescheduledDate",10:"Price",4:"Employee",11:"PONumber",13:"EmployeeTime5",14:"EmployeeTime6",18:"LastUpdated",16:"DateEntered",15:"EmployeeTime7",1:"ServiceID",17:"EnteredBy"})
 
     # ["RatingID","JobNumber","Address","City","State","Zip","Builder","Subdivision","GasUtility","ElectricUtility","Lot","Division","HERSIndex","BldgFile","DateEntered"]
 
-    dataframe[18] = dataframe[18].str[-8:]
+    dataframe[20] = dataframe[20].str[-8:]
     dataframe[4] = pd.to_numeric(dataframe[4], downcast='integer',errors='ignore')
-    dataframe[19] = pd.to_datetime(dataframe[19], utc=False)
+    dataframe[21] = pd.to_datetime(dataframe[21], utc=False)
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
@@ -177,18 +176,18 @@ def read_table(url):
     dataframe.to_csv("DASH_Job_Export_Queue_Reader_Date_v2.csv", index=False)
 
 def defloat():
-    with open('DASH_Job_Export_Queue_Reader_Date_v2.csv', newline='') as f, open('DASH_Job_Export_Queue_Reader_Date_defloated_v2.csv', "w", newline='') as outFile:
+    with open('DASH_Job_Export_Queue_Reader_Date_v2.csv', newline='') as f, open('DASH_Job_Export_Queue_Reader_defloated_v2.csv', "w", newline='') as outFile:
         reader = csv.reader(f)
         writer = csv.writer(outFile)
         for row in reader:
             if row[10].endswith(".0") == True: # This statement converts the floats in the csv to regular values.
                 row[10] = row[10][:-2]
-                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19]])
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19],row[20],row[21]])
             elif row[10] == "":
                 row[10] = ''
-                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19]])
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19],row[20],row[21]])
             else:
-                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19]])
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19],row[20],row[21]])
                 continue
 
 def csv_to_database(json_target_file):
@@ -208,7 +207,7 @@ def csv_to_database(json_target_file):
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\DASH_Job_Export_Queue_Reader_Date_defloated_v2.csv"
+    path= os.getcwd()+"\\DASH_Job_Export_Queue_Reader_defloated_v2.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
     
@@ -233,7 +232,7 @@ def main():
     print("DASHNextGen_job_date_BIG_v2.py is Starting")
     # read_energystar_and_non_energy_star_queue_tabs()
     login_into_dash("./DASHLoginInfo.json")
-    read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1353")
+    read_table("https://sem.myirate.com/Reports/AdHoc_View.aspx?id=1387")
     defloat()
     csv_to_database("./DASHLoginInfo.json")
     logout_session()

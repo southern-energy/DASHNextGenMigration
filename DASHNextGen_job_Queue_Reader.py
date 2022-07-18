@@ -73,8 +73,6 @@ def login_into_dash(json_target_file):
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$Password").send_keys(password)
     browser.find_element_by_name("ctl00$ContentPlaceHolder1$btnLogin").click()
 
-#TODO: Add way to connect to Non-Energy Star Sheet and Rob's Energy Star Sheet
-
 def read_energystar_and_non_energy_star_queue_tabs():
 
     """
@@ -106,6 +104,13 @@ def read_energystar_and_non_energy_star_queue_tabs():
     print(f"We have " + str(len(combined_list)) + " total DASH IDs.")
     global DASH_ID_List
     DASH_ID_List = combined_list
+    print(DASH_ID_List)
+
+def read_DASH_Service_Report_Export_file():
+    service_file = pd.read_csv("DASH_Service_Report_Export.csv")
+    DASH_ID_List_2 = service_file["JobID"].drop_duplicates()
+    global DASH_ID_List_3
+    DASH_ID_List_3 = DASH_ID_List_2.tolist()
 
 def read_table(url, DASH_List):
     browser.get(url)
@@ -113,8 +118,8 @@ def read_table(url, DASH_List):
     dataframe = pd.DataFrame()
 
 
-    for index, DASH_ID in enumerate(DASH_ID_List):
-        print(f"We are on DASH ID " + str(DASH_ID) + " number " + str(int(index)+1) + " of " + str(len(DASH_ID_List)))
+    for index, DASH_ID in enumerate(DASH_List):
+        print(f"We are on DASH ID " + str(DASH_ID) + " number " + str(int(index)+1) + " of " + str(len(DASH_List)))
         print(f"Grabbing page for DASH " + str(DASH_ID))
         try:
             WebDriverWait(browser,1).until(EC.element_to_be_clickable((By.ID,"ctl00_ContentPlaceHolder1_rfReport_ctl01_ctl08_ctl04")))
@@ -132,7 +137,7 @@ def read_table(url, DASH_List):
                 dataframe = dataframe.append(pd.read_html(table_we_want),ignore_index=True)
         
 
-    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,14,15,19,16,17,18,13,1]]
+    dataframe = dataframe[[0,12,3,5,6,7,2,8,9,10,4,11,16,17,21,18,19,20,13,1,15,14]]
 
     #TODO: Label these columns.
 
@@ -140,9 +145,9 @@ def read_table(url, DASH_List):
 
     # ["RatingID","JobNumber","Address","City","State","Zip","Builder","Subdivision","GasUtility","ElectricUtility","Lot","Division","HERSIndex","BldgFile","DateEntered"]
 
-    dataframe[18] = dataframe[18].str[-8:]
+    dataframe[20] = dataframe[20].str[-8:]
     dataframe[4] = pd.to_numeric(dataframe[4], downcast='integer',errors='ignore')
-    dataframe[19] = pd.to_datetime(dataframe[19], utc=False)
+    dataframe[21] = pd.to_datetime(dataframe[21], utc=False)
 
     # dataframe.to_csv("Export_After_Reorganization.csv", encoding="utf-8", index=False)
 
@@ -151,27 +156,27 @@ def read_table(url, DASH_List):
     dataframe = dataframe.replace({r'\r': ' '}, regex=True)# remove all returns
     dataframe = dataframe.replace({r'\n': ' '}, regex=True)# remove all newlines
 
-    # Remove the previous "DASH_Job_Export_Queue_Reader.csv" file.
-    if os.path.exists("DASH_Job_Export_Queue_Reader.csv"):
-        os.remove("DASH_Job_Export_Queue_Reader.csv")
+    # Remove the previous "DASHNextGen_job_read_Service_Report_Export.csv" file.
+    if os.path.exists("DASHNextGen_job_read_Service_Report_Export.csv"):
+        os.remove("DASHNextGen_job_read_Service_Report_Export.csv")
     else:
         print("We do not have to remove the file.")
 
-    dataframe.to_csv("DASH_Job_Export_Queue_Reader.csv", index=False)
+    dataframe.to_csv("DASHNextGen_job_read_Service_Report_Export.csv", index=False)
 
 def defloat():
-    with open('DASH_Job_Export_Queue_Reader.csv', newline='') as f, open('DASH_Job_Export_Queue_Reader_defloated.csv', "w", newline='') as outFile:
+    with open('DASHNextGen_job_read_Service_Report_Export.csv', newline='') as f, open('DASH_Job_Export_Queue_Reader_defloated.csv', "w", newline='') as outFile:
         reader = csv.reader(f)
         writer = csv.writer(outFile)
         for row in reader:
             if row[10].endswith(".0") == True: # This statement converts the floats in the csv to regular values.
                 row[10] = row[10][:-2]
-                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19]])
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19],row[20],row[21]])
             elif row[10] == "":
                 row[10] = ''
-                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19]])
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19],row[20],row[21]])
             else:
-                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19]])
+                writer.writerow([row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19],row[20],row[21]])
                 continue
 
 def csv_to_database(json_target_file):
@@ -215,13 +220,13 @@ def main():
     """
     print("DASHNextGen_job_Queue_Reader.py is Starting")
     read_energystar_and_non_energy_star_queue_tabs()
+    # read_DASH_Service_Report_Export_file()
     login_into_dash("./DASHLoginInfo.json")
-    read_table("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1322", DASH_ID_List)
+    read_table("https://sem.myirate.com/Reports/AdHoc_View.aspx?id=1386", DASH_ID_List)
     defloat()
     csv_to_database("./DASHLoginInfo.json")
     logout_session()
     print("DASHNextGen_job_Queue_Reader.py is Done")
 
 main()
-import beeper_module
 browser.quit()

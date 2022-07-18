@@ -210,12 +210,12 @@ def main():
     """
     print("DASHNextGen_Service_Report.py is Starting")
     login_into_dash("./DASHLoginInfo.json")
-    navigate_to_reports_and_click_excel("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1352")
+    navigate_to_reports_and_click_excel("https://sem.myirate.com/Reports/AdHoc_View.aspx?id=1382")
     time.sleep(5)
     grab_downloaded_report()
     csv_to_database("./DASHLoginInfo.json")
     file_cleanup()
-    print("We have uploaded to the database.")
+    print("\n\nWE HAVE SUCCESSFULLY UPLOADED TO THE DATABASE\n\n")
     logout_session()
 
 

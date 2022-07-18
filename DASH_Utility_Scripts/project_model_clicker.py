@@ -91,7 +91,7 @@ def logout_session():
 def main():
     login_into_dash("./DASHLoginInfo.json")
     click_all_items_submit(
-        "http://sem.myirate.com/Projects/Project_Edit_Model.aspx?id=3360")
+        "https://sem.myirate.com/Projects/Project_Edit_Model.aspx?id=3619")
     logout_session()
 
 
