@@ -176,7 +176,7 @@ def read_table(url):
     dataframe.to_csv("DASH_Job_Export_Queue_Reader_Date_v2.csv", index=False)
 
 def defloat():
-    with open('DASHNextGen_job_read_Service_Report_Export.csv', newline='') as f, open('DASH_Job_Export_Queue_Reader_defloated_v2.csv', "w", newline='') as outFile:
+    with open('DASH_Job_Export_Queue_Reader_Date_v2.csv', newline='') as f, open('DASH_Job_Export_Queue_Reader_defloated_v2.csv', "w", newline='') as outFile:
         reader = csv.reader(f)
         writer = csv.writer(outFile)
         for row in reader:

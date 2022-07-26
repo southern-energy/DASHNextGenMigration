@@ -100,7 +100,7 @@ def navigate_to_reports_and_click_excel(url):
     # Here we have to edit the dates that contain the job.
 
 
-    filter_date_start =  date.today() + timedelta(days=-1)
+    filter_date_start =  date.today() + timedelta(days=0)
     print(filter_date_start)
     datetime.date
     filter_date_end =  date.today() + timedelta(days=-180)
@@ -170,13 +170,13 @@ def grab_downloaded_report():
 
     # df = df[:601] # This is used to limit how many rows we pull from the sheet.
 
-    # Remove the previous "DASH_Service_Report_Export_v2.csv" file.
-    if os.path.exists("DASH_Service_Report_Export_v2.csv"):
-        os.remove("DASH_Service_Report_Export_v2.csv")
+    # Remove the previous "DASHNextGen_Service_EnteredDate_v2.csv" file.
+    if os.path.exists("DASHNextGen_Service_EnteredDate_v2.csv"):
+        os.remove("DASHNextGen_Service_EnteredDate_v2.csv")
     else:
         print("We do not have to remove the file.")
 
-    df.to_csv("DASH_Service_Report_Export_v2.csv", index=False)
+    df.to_csv("DASHNextGen_Service_EnteredDate_v2.csv", index=False)
 
 def csv_to_database(json_target_file):
     with open(json_target_file) as login_data:
@@ -195,7 +195,7 @@ def csv_to_database(json_target_file):
     
     # Point to the file that we want to grab.
 
-    path= os.getcwd()+"\\DASH_Service_Report_Export_v2.csv"
+    path= os.getcwd()+"\\DASHNextGen_Service_EnteredDate_v2.csv"
     print (path+"\\")
     path = path.replace('\\', '/')
     
@@ -206,7 +206,7 @@ def csv_to_database(json_target_file):
     cursor.close()
 
 def file_cleanup():
-    # Remove the previous "DASH_Service_Report_Export_v2.csv" file.
+    # Remove the previous "DASHNextGen_Service_EnteredDate_v2.csv" file.
     if os.path.exists("report.xls"):
         os.remove("report.xls")
     else:
@@ -224,7 +224,7 @@ def main():
     """
     Please use these to control the previously defined functions.
     """
-    print("DASHNextGen_Service_Report_date_BIG.py is Starting")
+    print("DASHNextGen_Service_EnteredDate_v2.py is Starting")
     login_into_dash("./DASHLoginInfo.json")
     navigate_to_reports_and_click_excel("http://sem.myirate.com/Reports/AdHoc_View.aspx?id=1305")
     time.sleep(5)
@@ -239,4 +239,4 @@ main()
 
 browser.quit()
 
-print("DASHNextGen_Service_Report_date_BIG.py is Done")
+print("DASHNextGen_Service_EnteredDate_v2.py is Done")
