@@ -81,7 +81,7 @@ def read_table(url):
     filter_date_start =  date.today() + datetime.timedelta(days=0)
     print(filter_date_start)
 
-    filter_date_end =  date.today() + datetime.timedelta(days=-183)
+    filter_date_end =  date.today() + datetime.timedelta(days=-180)
     print(filter_date_end)
 
     try:
