@@ -100,10 +100,10 @@ def navigate_to_reports_and_click_excel(url):
     # Here we have to edit the dates that contain the job.
 
 
-    filter_date_start =  date.today() + timedelta(days=1)
+    filter_date_start =  date.today() + timedelta(days=4)
     print(filter_date_start)
     datetime.date
-    filter_date_end =  date.today() + timedelta(days=-90)
+    filter_date_end =  date.today() + timedelta(days=-180)
     print(filter_date_end)
 
     try:
