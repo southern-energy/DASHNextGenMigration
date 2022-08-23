@@ -2,6 +2,7 @@ print("DASHNextGen_Master_for_Task_Scheduler.py is starting")
 import DASHNextGen_Builder
 import DASHNextGen_File_delimited_date
 import DASHNextGen_Job_date_BIG_v2
+import DASHNextGen_Service_DateClicker
 import DASHNextGen_Service_Report_date_BIG_v2
 import DASHNextGen_Service_EnteredDate_v2
 print("DASHNextGen_Master_for_Task_Scheduler.py is done")
