@@ -78,7 +78,7 @@ def read_table(url):
 
     dataframe = pd.DataFrame()
 
-    filter_date_start =  date.today() + datetime.timedelta(days=0)
+    filter_date_start =  date.today() + datetime.timedelta(days=1)
     print(filter_date_start)
 
     filter_date_end =  date.today() + datetime.timedelta(days=-180)
